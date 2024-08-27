@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokoAI - 制作自动化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-text {
+            background: linear-gradient(45deg, #3B82F6, #10B981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-white font-sans min-h-screen flex flex-col">
+    <header class="container mx-auto p-6 flex justify-between items-center bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-b-xl shadow-md">
+        <h1 class="text-4xl font-bold gradient-text">TokoAI</h1>
+        <nav>
+            <ul class="flex space-x-6">
+                <li><a href="#" class="hover:text-blue-600 transition duration-300">如何自动化</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition duration-300">我们的产品</a></li>
+                <li><a href="#" class="bg-gradient-to-r from-blue-500 to-teal-400 text-white px-6 py-2 rounded-full hover:from-blue-600 hover:to-teal-500 transition duration-300 transform hover:scale-105">登录</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 flex-grow">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold mb-4 gradient-text">制作自动化</h2>
+            <p class="text-xl text-gray-600">探索TokoAI的革命性自动化解决方案，提升您的业务效率</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+                <div class="text-4xl mb-4 text-blue-500">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-gray-800">自动化邮箱验证码收取</h3>
+                <p class="text-gray-600 mb-4">让您和客户不用登录邮箱也能获得验证码，简化操作流程。</p>
+                <a href="#" class="inline-block bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300">了解更多</a>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+                <div class="text-4xl mb-4 text-teal-500">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-gray-800">AI一键总结/撰写/回复邮件</h3>
+                <p class="text-gray-600 mb-4">利用AI技术快速处理邮件，提高沟通效率和质量。</p>
+                <a href="#" class="inline-block bg-teal-500 text-white px-4 py-2 rounded-full hover:bg-teal-600 transition duration-300">了解更多</a>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+                <div class="text-4xl mb-4 text-purple-500">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-gray-800">AI微信/网站/电商客服</h3>
+                <p class="text-gray-600 mb-4">智能客服系统，为您的业务提供24/7全天候支持。</p>
+                <a href="#" class="inline-block bg-purple-500 text-white px-4 py-2 rounded-full hover:bg-purple-600 transition duration-300">了解更多</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="container mx-auto p-6 mt-8 border-t flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <p class="text-gray-600">客服和商务合作请联系微信：</p>
+            <span class="font-bold text-green-500">TokoStephen</span>
+            <i class="fab fa-weixin text-2xl text-green-500"></i>
+        </div>
+        <div class="text-gray-500">&copy; 2024 TokoAI. All rights reserved.</div>
+    </footer>
+</body>
+</html>
