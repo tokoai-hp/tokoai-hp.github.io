@@ -3,358 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokoAI</title>
+    <title>TokoAI - 自动化解决方案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            color: #333;
-        }
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background-color: #ffffff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-radius: 12px;
-            padding: 40px;
-            width: 90%;
-            max-width: 800px;
-        }
-        .title-container {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        h1 {
-            color: #1a73e8;
-            font-size: 2.5em;
-            margin: 0;
-            padding: 10px 0;
-            position: relative;
-            display: inline-block;
-        }
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #1a73e8, transparent);
-        }
-        .embed-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-        }
-        .embed-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        footer {
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
-            color: white;
-            padding: 30px 0;
-            text-align: center;
-            font-size: 16px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        footer::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 60%);
-            transform: rotate(30deg);
-            z-index: 1;
-        }
-        .footer-content {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 2;
-        }
-        .footer-text {
-            margin-right: 20px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        .footer-link {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 15px;
-            border: 2px solid white;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            background-color: rgba(255,255,255,0.1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .footer-link:hover {
-            background-color: white;
-            color: #1a73e8;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .customer-service {
-            margin-top: 20px;
-            font-size: 14px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            background-color: rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 25px;
-        }
-        .customer-service i {
-            margin-right: 5px;
-            font-size: 1.2em;
-        }
-        .customer-service span {
-            margin: 0 10px;
-        }
-        .customer-service-item {
-            display: flex;
-            align-items: center;
-            margin: 5px 10px;
-        }
-        .ad-container {
-            width: 100%;
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            padding: 15px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-        .ad-content {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: none;
-            text-align: center;
-        }
-        .ad-content.active {
-            display: block;
-        }
-        .ad-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a73e8;
-            margin-bottom: 10px;
-        }
-        .ad-description {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        .ad-cta {
-            display: inline-block;
-            background-color: #1a73e8;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .ad-cta:hover {
-            background-color: #1557b0;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .usage-guide {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-top: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .usage-header {
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
-            color: white;
-            padding: 15px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
-        .usage-header:hover {
-            background: linear-gradient(135deg, #1557b0, #0a2e6b);
-        }
-        .usage-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            padding: 0 20px;
-        }
-        .usage-content.active {
-            max-height: 500px;
-            padding: 20px;
-        }
-        .usage-step {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-        }
-        .step-number {
-            background-color: #1a73e8;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            font-weight: bold;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        .step-content {
-            flex-grow: 1;
-        }
-        .usage-note {
-            background-color: #f0f4f8;
-            border-left: 4px solid #1a73e8;
-            padding: 10px 15px;
-            margin-top: 15px;
-            font-style: italic;
-            color: #555;
-        }
-        @media (max-width: 768px) {
-            .usage-content.active {
-                max-height: 600px;
-            }
+        .gradient-text {
+            background: linear-gradient(45deg, #3B82F6, #10B981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
-<body>
-    <div class="main-container">
-        <div class="ad-container" id="adContainer">
-            <div class="ad-content active" id="ad1">
-                <div class="ad-title">Monica无限版限时低价</div>
-                <div class="ad-description">无限制的gpt4o、claude3.5以及其他主流大模型的调用</div>
-                <a href="https://tokoai.craft.me/l4Khob8hI980iB" class="ad-cta">了解更多</a>
-            </div>
-            <div class="ad-content" id="ad2">
-                <div class="ad-title">Perplexity Pro限时低价</div>
-                <div class="ad-description">目前最强AI搜索引擎，年费拼车只要160</div>
-                <a href="https://tokoai.craft.me/l4Khob8hI980iB" class="ad-cta">立即升级</a>
-            </div>
-            <div class="ad-content" id="ad3">
-                <div class="ad-title">小模型无限使用套餐</div>
-                <div class="ad-description">4omini、claude hiku等小模型无限使用，一年仅需80</div>
-                <a href="https://tokoai.craft.me/l4Khob8hI980iB" class="ad-cta">免费试用</a>
-            </div>
-        </div>
-        
-        <div class="container">
-            <div class="title-container">
-                <h1>TokoAI</h1>
-            </div>
-            <div class="embed-container">
-                <iframe src="https://rows.com/embed/1S638y4tOCaC6FyGZp0ehgRgxRWwiO49SDW8ehhZz0yB/b5424c3e-39c0-4bda-9f77-cb6776e00122?_height=450" class="rows-embed" frameborder="0" width="100%" height="450" style="max-width: 100%; border: 1px solid #EAEAEA; border-radius: 4px;"></iframe>
-            </div>
-            <div class="usage-guide">
-                <div class="usage-header" onclick="toggleUsageGuide()">
-                    <span>使用方法</span>
-                    <i class="fas fa-chevron-down" id="usage-icon"></i>
-                </div>
-                <div class="usage-content" id="usage-content">
-                    <div class="usage-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">使用 vltyewz@hotmail.com 进行官网登录</div>
-                    </div>
-                    <div class="usage-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">等待约1分钟，验证码将出现在上方表格中</div>
-                    </div>
-                    <div class="usage-step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">请耐心等待，不要重复发送验证码</div>
-                    </div>                    
-                    <div class="usage-step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">如遇问题，请联系闲鱼客服</div>
-                    </div>
-                    <div class="usage-note">
-                        注意：如果闲鱼客服无法解决您的问题，请联系页面底部提供的微信客服
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<body class="bg-gradient-to-br from-gray-100 to-white font-sans min-h-screen flex flex-col">
+    <header class="container mx-auto p-6 flex justify-between items-center bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-b-xl shadow-md">
+        <h1 class="text-4xl font-bold gradient-text">TokoAI</h1>
+        <nav>
+            <ul class="flex space-x-6">
+                <li><a href="#" class="hover:text-blue-600 transition duration-300">如何自动化</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition duration-300">我们的产品</a></li>
+                <li><a href="#" class="bg-gradient-to-r from-blue-500 to-teal-400 text-white px-6 py-2 rounded-full hover:from-blue-600 hover:to-teal-500 transition duration-300 transform hover:scale-105">登录</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <footer>
-        <div class="footer-content">
-            <p class="footer-text">寻找更多实惠的AI工具？</p>
-            <a href="https://tokoai.craft.me/intro" target="_blank" class="footer-link">探索TokoAI</a>
+    <main class="container mx-auto p-6 flex-grow">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold mb-4 gradient-text">智能自动化，引领未来</h2>
+            <p class="text-xl text-gray-600">探索TokoAI的革命性自动化解决方案</p>
         </div>
-        <div class="customer-service">
-            <div class="customer-service-item">
-                <i class="fab fa-weixin"></i>
-                <span>联系微信客服：TokoStephen</span>
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-bl-full opacity-10"></div>
+                <h2 class="text-3xl font-bold mb-4 text-blue-600">制作自动化</h2>
+                <p class="mb-6 text-gray-600">探索如何创建和实现自动化解决方案，提升您的业务效率。</p>
+                <a href="https://tokoai.github.io" class="inline-block bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300">了解更多 &rarr;</a>
+                <div class="mt-6">
+                    <i class="fas fa-cogs text-5xl text-blue-300"></i>
+                </div>
             </div>
-            <div class="customer-service-item">
-                <i class="far fa-clock"></i>
-                <span>工作时间：9:00 - 22:00</span>
+            <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-teal-500 rounded-bl-full opacity-10"></div>
+                <h2 class="text-3xl font-bold mb-4 text-teal-600">使用自动化</h2>
+                <p class="mb-6 text-gray-600">让您和您的客户快速使用自动化来减少业务负担</p>
+                <a href="https://tokoai.github.io" class="inline-block bg-teal-500 text-white px-6 py-2 rounded-full hover:bg-teal-600 transition duration-300">了解更多 &rarr;</a>
+                <div class="mt-6">
+                    <i class="fas fa-robot text-5xl text-teal-300"></i>
+                </div>
             </div>
         </div>
+    </main>
+
+    <footer class="container mx-auto p-6 mt-8 border-t flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <p class="text-gray-600">客服和商务合作请联系微信：</p>
+            <span class="font-bold text-green-500">TokoStephen</span>
+            <i class="fab fa-weixin text-2xl text-green-500"></i>
+        </div>
+        <div class="text-gray-500">&copy; 2024 TokoAI. All rights reserved.</div>
     </footer>
-
-    <script>
-        // 广告轮播功能
-        let currentAd = 1;
-        const totalAds = 3;
-
-        function rotateAd() {
-            document.getElementById(`ad${currentAd}`).classList.remove('active');
-            currentAd = currentAd % totalAds + 1;
-            document.getElementById(`ad${currentAd}`).classList.add('active');
-        }
-
-        // 每10秒切换一次广告
-        setInterval(rotateAd, 10000);
-         function toggleUsageGuide() {
-            var content = document.getElementById('usage-content');
-            var icon = document.getElementById('usage-icon');
-            content.classList.toggle('active');
-            icon.classList.toggle('fa-chevron-up');
-            icon.classList.toggle('fa-chevron-down');
-        }
-    </script>
-    <!-- Coze SDK -->
-    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/0.1.0-beta.5/libs/cn/index.js"></script>
-    <script>
-        new CozeWebSDK.
+</body>
+</html>
