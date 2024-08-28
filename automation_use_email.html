@@ -153,9 +153,7 @@
             const data = response.data;
             
             if (data && data.vertfication_code1) {
-                const verificationInfo = data.vertfication_code1;
-                const verificationCode = verificationInfo.email_body.match(/验证码：\s*(\S+)/)[1] || '未找到验证码';
-                const loginLink = verificationInfo.email_body.match(/\[([^\]]+)\]/)[1];
+                const emailBodyHtml = data.vertfication_code1.email_body || '未找到邮件内容';
                 
                 resultContent.innerHTML = `
                     <div class="space-y-4">
@@ -163,18 +161,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <h3 class="text-xl font-semibold text-gray-900">验证成功</h3>
-                        <div class="bg-blue-50 rounded-lg p-4">
-                            <p class="text-sm text-blue-600">邮箱</p>
-                            <p class="text-lg font-medium text-blue-900">${verificationInfo.email_ver}</p>
+                        <div class="bg-gray-50 rounded-lg p-4 text-left">
+                            ${emailBodyHtml}
                         </div>
-                        <div class="bg-green-50 rounded-lg p-4">
-                            <p class="text-sm text-green-600">验证码</p>
-                            <p class="text-lg font-bold text-green-900">${verificationCode}</p>
-                        </div>
-                        <a href="${loginLink}" target="_blank" 
-                           class="inline-block w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-lg hover:from-blue-600 hover:to-teal-500 transition duration-300 text-center font-medium">
-                            点击此处登录
-                        </a>
                     </div>
                 `;
             } else {
