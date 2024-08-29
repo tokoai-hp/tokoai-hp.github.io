@@ -168,7 +168,7 @@
             <ul class="flex space-x-6 items-center">
                 <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
                 <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
-                <li id="loginItem"><a href="tokoai-hp.github.io/login.html" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+                <li id="loginItem"><a href="https://tokoai-hp.github.io/login.html" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
                 <li id="userMenu" class="hidden">
                     <div class="user-avatar" id="userAvatar"></div>
                 </li>
@@ -247,8 +247,6 @@
                     loginItem.classList.add('hidden');
                     userMenu.classList.remove('hidden');
                     userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
-                    
-                    // 添加点击头像跳转到个人信息页面的功能
                     userAvatar.addEventListener('click', () => {
                         window.location.href = 'https://tokoai-hp.github.io';
                     });
