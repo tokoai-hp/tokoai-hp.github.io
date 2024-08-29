@@ -7,7 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
         body {
+            font-family: 'Poppins', sans-serif;
             background: 
                 linear-gradient(to bottom, #000428, #004e92),
                 linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 255, 0.1));
@@ -141,18 +144,60 @@
                 transform: translate(0, 0) rotate(1080deg) scale(0);
             }
         }
+        .user-menu {
+            position: relative;
+        }
+        .user-menu-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem;
+            min-width: 150px;
+            z-index: 10;
+        }
+        .user-menu:hover .user-menu-content {
+            display: block;
+        }
+        .user-menu-item {
+            padding: 0.5rem 1rem;
+            color: white;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+        .user-menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
     <div class="aurora"></div>
     <div class="stars"></div>
     <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
-        <a href=" " class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a >
+        <a href="#" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
         <nav>
-            <ul class="flex space-x-6">
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a ></li>
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a ></li>
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a ></li>
+            <ul class="flex space-x-6 items-center">
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
+                <li id="loginNav"><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+                <li id="userNav" class="user-menu hidden">
+                    <a href="#" class="flex items-center space-x-2 hover:text-blue-400 transition duration-300 text-sm">
+                        <i class="fas fa-user-circle text-xl"></i>
+                        <span id="userName"></span>
+                    </a>
+                    <div class="user-menu-content">
+                        <a href="https://tokoai-hp.github.io" class="user-menu-item block">
+                            <i class="fas fa-user-cog mr-2"></i>个人信息
+                        </a>
+                        <a href="#" id="logoutBtn" class="user-menu-item block">
+                            <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+                        </a>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
@@ -160,19 +205,19 @@
     <main class="container mx-auto p-6 flex-grow z-10 relative">
         <div class="mb-24 mt-24 text-center">
             <h2 class="tokoai-title mb-4 fade-in-text" style="animation-delay: 0.2s;" id="tokoaiTitle">TokoAI</h2>
-            <p class="text-4xl text-gray-300 fade-in-text" style="animation-delay: 0.4s;">探索革命性自动化解决方案</p >
+            <p class="text-4xl text-gray-300 fade-in-text" style="animation-delay: 0.4s;">探索革命性自动化解决方案</p>
         </div>
         <div class="grid md:grid-cols-2 gap-12">
             <a href="https://tokoai-hp.github.io/automation-create.html" class="feature-card p-8 rounded-lg flex flex-col items-center justify-center text-center">
                 <i class="fas fa-magic card-icon mb-4"></i>
                 <h2 class="text-3xl font-bold mb-4 gradient-text">制作自动化</h2>
-                <p class="text-gray-300">探索如何创建和实现自动化解决方案，提升您的业务效率</p >
-            </a >
+                <p class="text-gray-300">探索如何创建和实现自动化解决方案，提升您的业务效率</p>
+            </a>
             <a href="https://tokoai-hp.github.io/automation_use_email.html" class="feature-card p-8 rounded-lg flex flex-col items-center justify-center text-center">
                 <i class="fas fa-lightbulb card-icon mb-4"></i>
                 <h2 class="text-3xl font-bold mb-4 gradient-text">使用自动化</h2>
-                <p class="text-gray-300">让您和您的客户快速使用自动化来减少业务负担</p >
-            </a >
+                <p class="text-gray-300">让您和您的客户快速使用自动化来减少业务负担</p>
+            </a>
         </div>
     </main>
 
@@ -208,8 +253,47 @@
                 title.appendChild(star);
             }
         }
+
+        createStars();
+
+        // 检查用户登录状态并更新UI
+        function checkAuthAndUpdateUI() {
+            const token = localStorage.getItem('authToken');
+            const loginNav = document.getElementById('loginNav');
+            const userNav = document.getElementById('userNav');
+            const userName = document.getElementById('userName');
+
+            if (token) {
+                // 用户已登录
+                loginNav.classList.add('hidden');
+                userNav.classList.remove('hidden');
+
+                // 获取用户信息
+                fetch('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    userName.textContent = data.name;
+                })
+                .catch(error => {
+                    console.error('Error fetching user info:', error);
+                    logout(); // 如果获取用户信息失败，登出用户
+                });
+            } else {
+                // 用户未登录
+                loginNav.classList.remove('hidden');
+                userNav.classList.add('hidden');
+            }
+        }
+
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('authToken');
+            checkAuthAndUpdateUI();
+        }
+
+        // 添加登出按钮事件监听器
         
-        window.addEventListener('load', createStars);
-    </script>
-</body>
-</html>
