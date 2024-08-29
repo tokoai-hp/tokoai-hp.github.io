@@ -6,6 +6,7 @@
     <title>TokoAI - 自动化解决方案</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -156,7 +157,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            padding: 0.5rem;
+            padding: 10px;
             min-width: 150px;
             z-index: 10;
         }
@@ -164,13 +165,25 @@
             display: block;
         }
         .user-menu-item {
-            padding: 0.5rem 1rem;
+            padding: 8px 12px;
             color: white;
             transition: all 0.3s ease;
             border-radius: 4px;
         }
         .user-menu-item:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -183,19 +196,12 @@
             <ul class="flex space-x-6 items-center">
                 <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
                 <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
-                <li id="loginNav"><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
-                <li id="userNav" class="user-menu hidden">
-                    <a href="#" class="flex items-center space-x-2 hover:text-blue-400 transition duration-300 text-sm">
-                        <i class="fas fa-user-circle text-xl"></i>
-                        <span id="userName"></span>
-                    </a>
+                <li id="loginItem"><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+                <li id="userMenu" class="user-menu hidden">
+                    <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-menu-content">
-                        <a href="https://tokoai-hp.github.io" class="user-menu-item block">
-                            <i class="fas fa-user-cog mr-2"></i>个人信息
-                        </a>
-                        <a href="#" id="logoutBtn" class="user-menu-item block">
-                            <i class="fas fa-sign-out-alt mr-2"></i>退出登录
-                        </a>
+                        <a href="https://tokoai-hp.github.io" class="block user-menu-item">查看个人信息</a>
+                        <a href="#" class="block user-menu-item" id="logoutBtn">退出登录</a>
                     </div>
                 </li>
             </ul>
@@ -256,44 +262,40 @@
 
         createStars();
 
-        // 检查用户登录状态并更新UI
-        function checkAuthAndUpdateUI() {
+        // 用户认证和菜单功能
+        const loginItem = document.getElementById('loginItem');
+        const userMenu = document.getElementById('userMenu');
+        const userAvatar = document.getElementById('userAvatar');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        async function checkAuth() {
             const token = localStorage.getItem('authToken');
-            const loginNav = document.getElementById('loginNav');
-            const userNav = document.getElementById('userNav');
-            const userName = document.getElementById('userName');
-
             if (token) {
-                // 用户已登录
-                loginNav.classList.add('hidden');
-                userNav.classList.remove('hidden');
-
-                // 获取用户信息
-                fetch('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    userName.textContent = data.name;
-                })
-                .catch(error => {
-                    console.error('Error fetching user info:', error);
-                    logout(); // 如果获取用户信息失败，登出用户
-                });
-            } else {
-                // 用户未登录
-                loginNav.classList.remove('hidden');
-                userNav.classList.add('hidden');
+                try {
+                    const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    loginItem.classList.add('hidden');
+                    userMenu.classList.remove('hidden');
+                    userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
+                } catch (error) {
+                    console.error('Authentication failed:', error);
+                    localStorage.removeItem('authToken');
+                }
             }
         }
 
-        // 登出功能
-        function logout() {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             localStorage.removeItem('authToken');
-            checkAuthAndUpdateUI();
-        }
+            loginItem.classList.remove('hidden');
+            userMenu.classList.add('hidden');
+            window.location.reload();
+        });
 
-        // 添加登出按钮事件监听器
-        
+        checkAuth();
+    </script>
+</body>
+</html>
