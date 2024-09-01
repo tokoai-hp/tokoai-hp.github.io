@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokoAI - 邮箱自动化</title>
+    <title>TokoAI - 邮件自动化</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -84,49 +84,39 @@
         </nav>
     </header>
 
-    <main id="mainContent" class="container mx-auto p-6 flex-grow z-10 relative hidden">
-        <div class="mb-12 mt-12 text-center">
-            <h2 class="text-4xl font-bold mb-4 gradient-text">邮箱自动化设置</h2>
-        </div>
-        <div id="step1" class="mb-8">
-            <h3 class="text-2xl mb-4">第一步：转发验证码邮箱</h3>
-            <p class="mb-4">请将需要代收验证码的邮箱转发到以下地址：</p>
-            <p class="text-xl font-bold mb-4">toko20231029@gmail.com</p>
-            <button id="checkButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                检查并继续
-            </button>
-        </div>
-        <div id="step2" class="hidden mb-8">
-            <h3 class="text-2xl mb-4">第二步：填写信息</h3>
-            <form id="infoForm" class="space-y-4">
-                <div>
-                    <label for="email_resend" class="block mb-2">需要转发的邮箱：</label>
-                    <input type="email" id="email_resend" name="email_resend" required class="w-full p-2 rounded bg-gray-700 text-white">
-                </div>
-                <div>
-                    <label for="need" class="block mb-2">您的需求：</label>
-                    <textarea id="need" name="need" required class="w-full p-2 rounded bg-gray-700 text-white"></textarea>
-                </div>
-                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-                    提交
-                </button>
-            </form>
-        </div>
-        <div id="step3" class="hidden mb-8">
-            <h3 class="text-2xl mb-4">第三步：您的密码</h3>
-            <p class="mb-4">您的密码是：</p>
-            <p id="password" class="text-xl font-bold mb-4"></p>
-            <button id="copyButton" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
-                复制密码
-            </button>
-        </div>
-        <div id="step4" class="hidden mb-8">
-            <h3 class="text-2xl mb-4">第四步：开始使用</h3>
-            <p class="mb-4">密码已复制。您现在可以开始使用自动化邮件服务了。</p>
-            <p class="mb-4">关于自动化邮件的信息可以在用户主页确认。</p>
-            <a href="./automation_use_email.html" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded inline-block">
-                开始使用
-            </a>
+    <main class="container mx-auto p-6 flex-grow z-10 relative">
+        <div class="max-w-2xl mx-auto bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold mb-6 gradient-text">邮件自动化设置</h1>
+            <div id="step1" class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">第一步：转发验证码</h2>
+                <p class="mb-4">请将需要代收验证码的邮箱转发到：<strong>toko20231029@gmail.com</strong></p>
+                <button id="checkBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">检查并继续</button>
+            </div>
+            <div id="step2" class="hidden mb-8">
+                <h2 class="text-xl font-semibold mb-4">第二步：填写信息</h2>
+                <form id="infoForm">
+                    <div class="mb-4">
+                        <label for="email_resend" class="block mb-2">需要转发的邮箱：</label>
+                        <input type="email" id="email_resend" name="email_resend" required class="w-full px-3 py-2 bg-gray-700 text-white rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label for="need" class="block mb-2">需求描述：</label>
+                        <textarea id="need" name="need" required class="w-full px-3 py-2 bg-gray-700 text-white rounded"></textarea>
+                    </div>
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">提交</button>
+                </form>
+            </div>
+            <div id="step3" class="hidden mb-8">
+                <h2 class="text-xl font-semibold mb-4">第三步：获取密码</h2>
+                <p class="mb-4">您的密码是：<strong id="password"></strong></p>
+                <button id="copyBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300">复制密码</button>
+            </div>
+            <div id="step4" class="hidden">
+                <h2 class="text-xl font-semibold mb-4">第四步：开始使用</h2>
+                <p class="mb-4">密码已复制。您现在可以开始使用自动化邮件服务了。</p>
+                <a href="./automation_use_email.html" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300 inline-block">开始使用</a>
+                <p class="mt-4 text-sm">注意：有关自动化邮件的信息可以在用户主页确认。</p>
+            </div>
         </div>
     </main>
 
@@ -139,30 +129,29 @@
     </footer>
 
     <script>
-        // 身份验证
+        // 验证身份token
         function checkAuthentication() {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 window.location.href = './login.html';
-            } else {
-                document.getElementById('mainContent').classList.remove('hidden');
-                document.getElementById('loginItem').classList.add('hidden');
-                document.getElementById('userMenu').classList.remove('hidden');
-                const userAvatar = document.getElementById('userAvatar');
-                userAvatar.textContent = localStorage.getItem('username').charAt(0).toUpperCase();
             }
         }
 
         checkAuthentication();
 
         // 步骤控制
-        const checkButton = document.getElementById('checkButton');
+        const checkBtn = document.getElementById('checkBtn');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
         const infoForm = document.getElementById('infoForm');
-        const copyButton = document.getElementById('copyButton');
+        const passwordElement = document.getElementById('password');
+        const copyBtn = document.getElementById('copyBtn');
 
-        checkButton.addEventListener('click', () => {
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
+        checkBtn.addEventListener('click', () => {
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
         });
 
         infoForm.addEventListener('submit', async (e) => {
@@ -176,21 +165,20 @@
                     need
                 });
 
-                const password = response.data.password;
-                document.getElementById('password').textContent = password;
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step3').classList.remove('hidden');
+                passwordElement.textContent = response.data.password;
+                step2.classList.add('hidden');
+                step3.classList.remove('hidden');
             } catch (error) {
                 console.error('Error:', error);
-                alert('发生错误，请稍后再试。');
+                alert('发生错误，请稍后重试。');
             }
         });
 
-        copyButton.addEventListener('click', () => {
-            const password = document.getElementById('password').textContent;
+        copyBtn.addEventListener('click', () => {
+            const password = passwordElement.textContent;
             navigator.clipboard.writeText(password).then(() => {
-                document.getElementById('step3').classList.add('hidden');
-                document.getElementById('step4').classList.remove('hidden');
+                step3.classList.add('hidden');
+                step4.classList.remove('hidden');
             });
         });
     </script>
