@@ -97,7 +97,7 @@
                             <input type="checkbox" id="step1Checkbox" class="mt-1 h-5 w-5 text-blue-500">
                             <div>
                                 <label for="step1Checkbox" class="text-base text-gray-300 font-medium">
-                                    将您想要自动化的邮件转发到 xxxxx@hotmail.com
+                                    将您想要自动化的邮件转发到 toko20231029@gmail.com
                                 </label>
                                 <p class="text-sm text-gray-400 mt-2">打开邮箱设置 → 转发设置 → 填写转发邮箱</p>
                             </div>
@@ -171,7 +171,6 @@
         </div>
         <div class="text-gray-400">&copy; 2024 TokoAI. All rights reserved.</div>
     </footer>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const step1Checkbox = document.getElementById('step1Checkbox');
@@ -188,6 +187,16 @@
             const startButton = document.getElementById('startButton');
 
             let generatedPassword = '';
+
+            // 验证认证token
+            function checkAuthToken() {
+                const authToken = localStorage.getItem('authToken');
+                if (!authToken) {
+                    window.location.href = './login.html';
+                }
+            }
+
+            checkAuthToken();
 
             step1Checkbox.addEventListener('change', function() {
                 formCard.classList.toggle('hidden', !this.checked);
@@ -263,7 +272,7 @@
 
             // 用户认证和头像功能
             const loginItem = document.getElementById('loginItem');
-                        const userMenu = document.getElementById('userMenu');
+            const userMenu = document.getElementById('userMenu');
             const userAvatar = document.getElementById('userAvatar');
 
             async function checkAuth() {
@@ -284,7 +293,10 @@
                     } catch (error) {
                         console.error('Authentication failed:', error);
                         localStorage.removeItem('authToken');
+                        window.location.href = './login.html';
                     }
+                } else {
+                    window.location.href = './login.html';
                 }
             }
 
@@ -293,4 +305,3 @@
     </script>
 </body>
 </html>
-            
