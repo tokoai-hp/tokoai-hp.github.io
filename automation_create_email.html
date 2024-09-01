@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokoAI - 邮件自动化设置</title>
+    <title>TokoAI - 邮箱自动化</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -67,11 +67,11 @@
         }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen flex flex-col">
+<body class="font-sans min-h-screen flex flex-col text-gray-100">
     <div class="aurora"></div>
     <div class="stars"></div>
     <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
-        <a href="tokoai-hp.github.io" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
+        <a href="#" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
         <nav>
             <ul class="flex space-x-6 items-center">
                 <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
@@ -84,84 +84,49 @@
         </nav>
     </header>
 
-    <main class="container mx-auto px-4 py-8 flex-grow z-10 relative">
-        <div class="max-w-3xl mx-auto">
-            <div class="bg-white bg-opacity-10 rounded-2xl shadow-lg overflow-hidden mb-8" id="tutorialCard">
-                <div class="bg-gradient-to-r from-blue-500 to-green-400 p-6">
-                    <h2 class="text-2xl font-bold text-white text-center">邮件自动化教程</h2>
+    <main id="mainContent" class="container mx-auto p-6 flex-grow z-10 relative hidden">
+        <div class="mb-12 mt-12 text-center">
+            <h2 class="text-4xl font-bold mb-4 gradient-text">邮箱自动化设置</h2>
+        </div>
+        <div id="step1" class="mb-8">
+            <h3 class="text-2xl mb-4">第一步：转发验证码邮箱</h3>
+            <p class="mb-4">请将需要代收验证码的邮箱转发到以下地址：</p>
+            <p class="text-xl font-bold mb-4">toko20231029@gmail.com</p>
+            <button id="checkButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                检查并继续
+            </button>
+        </div>
+        <div id="step2" class="hidden mb-8">
+            <h3 class="text-2xl mb-4">第二步：填写信息</h3>
+            <form id="infoForm" class="space-y-4">
+                <div>
+                    <label for="email_resend" class="block mb-2">需要转发的邮箱：</label>
+                    <input type="email" id="email_resend" name="email_resend" required class="w-full p-2 rounded bg-gray-700 text-white">
                 </div>
-                <div class="p-6 space-y-6">
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-200 mb-4">1. 设置邮件转发</h3>
-                        <div class="flex items-start space-x-4 bg-gray-800 bg-opacity-50 p-4 rounded-lg">
-                            <input type="checkbox" id="step1Checkbox" class="mt-1 h-5 w-5 text-blue-500">
-                            <div>
-                                <label for="step1Checkbox" class="text-base text-gray-300 font-medium">
-                                    将您想要自动化的邮件转发到 toko20231029@gmail.com
-                                </label>
-                                <p class="text-sm text-gray-400 mt-2">打开邮箱设置 → 转发设置 → 填写转发邮箱</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="step2Section" class="hidden">
-                        <h3 class="text-xl font-semibold text-gray-200 mb-4">2. 保存密码</h3>
-                        <div class="flex items-start space-x-4 bg-gray-800 bg-opacity-50 p-4 rounded-lg">
-                            <input type="checkbox" id="step2Checkbox" class="mt-1 h-5 w-5 text-blue-500">
-                            <div>
-                                <label for="step2Checkbox" class="text-base text-gray-300 font-medium">
-                                    请保存好你的用户密码
-                                </label>
-                                <p class="text-sm text-gray-400 mt-2">您和您的客户可以使用邮箱和用户密码来一键收取邮件</p>
-                                <div class="mt-3 bg-gray-700 bg-opacity-50 p-3 rounded border border-gray-600">
-                                    <p class="text-sm text-gray-300 mb-2">您的密码：</p>
-                                    <div class="flex items-center">
-                                        <code id="passwordDisplay" class="bg-gray-800 px-3 py-2 rounded flex-grow mr-2 text-gray-300"></code>
-                                        <button id="copyButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
-                                            复制
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <label for="need" class="block mb-2">您的需求：</label>
+                    <textarea id="need" name="need" required class="w-full p-2 rounded bg-gray-700 text-white"></textarea>
                 </div>
-            </div>
-
-            <div class="bg-white bg-opacity-10 rounded-2xl shadow-lg overflow-hidden hidden" id="formCard">
-                <div class="bg-gradient-to-r from-blue-500 to-green-400 p-6">
-                    <h2 class="text-2xl font-bold text-white text-center">邮件自动化收集</h2>
-                </div>
-                <div class="p-6">
-                    <form id="emailForm" class="space-y-6">
-                        <div>
-                            <label for="email_resend" class="block text-sm font-medium text-gray-300 mb-1">邮箱地址</label>
-                            <input type="email" id="email_resend" name="email_resend" required placeholder="请输入您的邮箱地址" 
-                                   class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 text-white">
-                        </div>
-                        <div>
-                            <label for="need" class="block text-sm font-medium text-gray-300 mb-1">其他需求</label>
-                            <textarea id="need" name="need" placeholder="如有其他需求，请在此说明" rows="3"
-                                      class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 text-white"></textarea>
-                        </div>
-                        <button type="submit" id="submitButton" 
-                                class="w-full bg-gradient-to-r from-blue-500 to-green-400 text-white font-medium py-3 px-4 rounded-md hover:from-blue-600 hover:to-green-500 transition duration-300 shadow-md hover:shadow-lg">
-                            提交
-                        </button>
-                    </form>
-                    <div id="errorMessage" class="mt-4 bg-red-900 bg-opacity-50 border-l-4 border-red-500 text-red-100 p-4 hidden" role="alert">
-                        <p class="font-bold">错误</p>
-                        <p id="errorText"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 text-center hidden" id="startSection">
-                <a href="https://tokoai-hp.github.io/automation_use_email.html" id="startButton" class="inline-block bg-gradient-to-r from-blue-500 to-green-400 text-white font-medium py-3 px-8 rounded-md hover:from-blue-600 hover:to-green-500 transition duration-300 shadow-md hover:shadow-lg">
-                    点击此处开始
-                </a>
-                <p class="mt-4 text-sm text-gray-400">如果有关自动化邮件的信息可以在用户主页确认</p>
-            </div>
+                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    提交
+                </button>
+            </form>
+        </div>
+        <div id="step3" class="hidden mb-8">
+            <h3 class="text-2xl mb-4">第三步：您的密码</h3>
+            <p class="mb-4">您的密码是：</p>
+            <p id="password" class="text-xl font-bold mb-4"></p>
+            <button id="copyButton" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
+                复制密码
+            </button>
+        </div>
+        <div id="step4" class="hidden mb-8">
+            <h3 class="text-2xl mb-4">第四步：开始使用</h3>
+            <p class="mb-4">密码已复制。您现在可以开始使用自动化邮件服务了。</p>
+            <p class="mb-4">关于自动化邮件的信息可以在用户主页确认。</p>
+            <a href="./automation_use_email.html" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded inline-block">
+                开始使用
+            </a>
         </div>
     </main>
 
@@ -174,130 +139,59 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const step1Checkbox = document.getElementById('step1Checkbox');
-            const step2Section = document.getElementById('step2Section');
-            const step2Checkbox = document.getElementById('step2Checkbox');
-            const formCard = document.getElementById('formCard');
-            const emailForm = document.getElementById('emailForm');
-            const submitButton = document.getElementById('submitButton');
-            const errorMessage = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
-            const passwordDisplay = document.getElementById('passwordDisplay');
-            const copyButton = document.getElementById('copyButton');
-            const startSection = document.getElementById('startSection');
-            const startButton = document.getElementById('startButton');
-
-            let generatedPassword = '';
-
-            // 验证认证token
-            function checkAuthToken() {
-                const authToken = localStorage.getItem('authToken');
-                if (!authToken) {
-                    window.location.href = './login.html';
-                }
+        // 身份验证
+        function checkAuthentication() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = './login.html';
+            } else {
+                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('loginItem').classList.add('hidden');
+                document.getElementById('userMenu').classList.remove('hidden');
+                const userAvatar = document.getElementById('userAvatar');
+                userAvatar.textContent = localStorage.getItem('username').charAt(0).toUpperCase();
             }
+        }
 
-            checkAuthToken();
+        checkAuthentication();
 
-            step1Checkbox.addEventListener('change', function() {
-                formCard.classList.toggle('hidden', !this.checked);
-            });
+        // 步骤控制
+        const checkButton = document.getElementById('checkButton');
+        const infoForm = document.getElementById('infoForm');
+        const copyButton = document.getElementById('copyButton');
 
-            step2Checkbox.addEventListener('change', function() {
-                startSection.classList.toggle('hidden', !this.checked);
-            });
+        checkButton.addEventListener('click', () => {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        });
 
-            emailForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                submitButton.textContent = '提交中...';
-                submitButton.disabled = true;
-                errorMessage.classList.add('hidden');
+        infoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email_resend = document.getElementById('email_resend').value;
+            const need = document.getElementById('need').value;
 
-                const formData = {
-                    email_resend: document.getElementById('email_resend').value,
-                    need: document.getElementById('need').value
-                };
-
-                const authToken = localStorage.getItem('authToken');
-
-                fetch('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/test', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('提交失败，请稍后重试');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    formCard.classList.add('hidden');
-                    step2Section.classList.remove('hidden');
-                    generatedPassword = data.password;
-                    passwordDisplay.textContent = generatedPassword;
-                })
-                .catch(error => {
-                    errorText.textContent = error.message;
-                    errorMessage.classList.remove('hidden');
-                })
-                .finally(() => {
-                    submitButton.textContent = '提交';
-                    submitButton.disabled = false;
+            try {
+                const response = await axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/test', {
+                    email_resend,
+                    need
                 });
-            });
 
-            copyButton.addEventListener('click', function() {
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = generatedPassword;
-                document.body.appendChild(tempTextArea);
-                
-                tempTextArea.select();
-                document.execCommand('copy');
-                
-                document.body.removeChild(tempTextArea);
-
-                copyButton.textContent = '已复制';
-                setTimeout(() => {
-                    copyButton.textContent = '复制';
-                }, 2000);
-            });
-
-            // 用户认证和头像功能
-            const loginItem = document.getElementById('loginItem');
-            const userMenu = document.getElementById('userMenu');
-            const userAvatar = document.getElementById('userAvatar');
-
-            async function checkAuth() {
-                const token = localStorage.getItem('authToken');
-                if (token) {
-                    try {
-                        const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-                        loginItem.classList.add('hidden');
-                        userMenu.classList.remove('hidden');
-                        userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
-                        userAvatar.addEventListener('click', () => {
-                            window.location.href = 'https://tokoai-hp.github.io';
-                        });
-                    } catch (error) {
-                        console.error('Authentication failed:', error);
-                        localStorage.removeItem('authToken');
-                        window.location.href = './login.html';
-                    }
-                } else {
-                    window.location.href = './login.html';
-                }
+                const password = response.data.password;
+                document.getElementById('password').textContent = password;
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('发生错误，请稍后再试。');
             }
+        });
 
-            checkAuth();
+        copyButton.addEventListener('click', () => {
+            const password = document.getElementById('password').textContent;
+            navigator.clipboard.writeText(password).then(() => {
+                document.getElementById('step3').classList.add('hidden');
+                document.getElementById('step4').classList.remove('hidden');
+            });
         });
     </script>
 </body>
