@@ -160,7 +160,7 @@
                 <a href="https://tokoai-hp.github.io/automation_use_email.html" id="startButton" class="inline-block bg-gradient-to-r from-blue-500 to-green-400 text-white font-medium py-3 px-8 rounded-md hover:from-blue-600 hover:to-green-500 transition duration-300 shadow-md hover:shadow-lg">
                     点击此处开始
                 </a>
-                <p class="mt-4 text-sm text-gray-400">有关自动化邮件的信息可以在用户主页确认</p>
+                <p class="mt-4 text-sm text-gray-400">如果有关自动化邮件的信息，您可以在用户主页确认。</p>
             </div>
         </div>
     </main>
@@ -189,16 +189,6 @@
             const startButton = document.getElementById('startButton');
 
             let generatedPassword = '';
-
-            // 验证 authentication token
-            function checkAuthToken() {
-                const authToken = localStorage.getItem('authToken');
-                if (!authToken) {
-                    window.location.href = './login.html';
-                }
-            }
-
-            checkAuthToken();
 
             step1Checkbox.addEventListener('change', function() {
                 formCard.classList.toggle('hidden', !this.checked);
@@ -252,55 +242,55 @@
             });
 
             copyButton.addEventListener('click', function() {
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = generatedPassword;
-                document.body.appendChild(tempTextArea);
-                
-                tempTextArea.select();
-                document.execCommand('copy');
-                
-                document.body.removeChild(tempTextArea);
+                navigator.clipboard.writeText(generatedPassword).then(() => {
+                    copyButton.textContent = '已复制';
+                    setTimeout(() => {
+                        copyButton.textContent = '复制';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            });
 
-                copyButton.textContent = '已复制';
-        setTimeout(() => {
-            copyButton.textContent = '复制';
-        }, 2000);
-    });
+            // 用户认证和头像功能
+            const loginItem = document.getElementById('loginItem');
+            const userMenu = document.getElementById('userMenu');
+            const userAvatar = document.getElementById('userAvatar');
 
-    // 用户认证和头像功能
-    const loginItem = document.getElementById('loginItem');
-    const userMenu = document.getElementById('userMenu');
-    const userAvatar = document.getElementById('userAvatar');
+            async function checkAuth() {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    window.location.href = './login.html';
+                    return;
+                }
 
-    async function checkAuth() {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            try {
-                const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+                try {
+                    const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Authentication failed');
                     }
-                });
-                loginItem.classList.add('hidden');
-                userMenu.classList.remove('hidden');
-                userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
-                userAvatar.addEventListener('click', () => {
-                    window.location.href = 'https://tokoai-hp.github.io';
-                });
-            } catch (error) {
-                console.error('Authentication failed:', error);
-                localStorage.removeItem('authToken');
-                window.location.href = './login.html';
-            }
-        } else {
-            window.location.href = './login.html';
-        }
-    }
 
-    checkAuth();
-});
-</script>
+                    const userData = await response.json();
+                    loginItem.classList.add('hidden');
+                    userMenu.classList.remove('hidden');
+                    userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+                    userAvatar.addEventListener('click', () => {
+                        window.location.href = 'https://tokoai-hp.github.io';
+                    });
+                } catch (error) {
+                    console.error('Authentication failed:', error);
+                    localStorage.removeItem('authToken');
+                    window.location.href = './login.html';
+                }
+            }
+
+            checkAuth();
+        });
+    </script>
 </body>
 </html>
-
-
