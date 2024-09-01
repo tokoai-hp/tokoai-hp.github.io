@@ -152,24 +152,42 @@
             const token = localStorage.getItem('authToken');
             if (!token) {
                 window.location.href = './login.html';
+            } else {
+                // 验证 token
+                fetch('https://x8ki-letl-twmt.n7.xano.io/api:2gnTJ2I8/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Token验证失败');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showUserAvatar(data.email);
+                })
+                .catch(error => {
+                    console.error('验证失败:', error);
+                    localStorage.removeItem('authToken');
+                    window.location.href = './login.html';
+                });
             }
-            // 这里可以添加token验证的逻辑
         }
 
         // 页面加载时检查身份验证
         window.onload = checkAuthentication;
 
         // 显示用户头像
-        function showUserAvatar() {
-            const userEmail = localStorage.getItem('userEmail');
-            if (userEmail) {
+        function showUserAvatar(email) {
+            if (email) {
                 document.getElementById('loginItem').classList.add('hidden');
                 document.getElementById('userMenu').classList.remove('hidden');
-                document.getElementById('userAvatar').textContent = userEmail[0].toUpperCase();
+                document.getElementById('userAvatar').textContent = email[0].toUpperCase();
             }
         }
-
-        showUserAvatar();
 
         // 检查按钮点击事件
         document.getElementById('checkBtn').addEventListener('click', function() {
