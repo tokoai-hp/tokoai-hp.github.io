@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokoAI - 邮件自动化</title>
+    <title>TokoAI - 邮件自动化设置</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -53,13 +53,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .card {
+        .feature-card {
+            transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
         }
-        .card:hover {
+        .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             background: rgba(255, 255, 255, 0.1);
@@ -95,8 +95,57 @@
         </nav>
     </header>
 
-    <main class="container mx-auto p-6 flex-grow z-10 relative" id="mainContent">
-        <!-- Content will be dynamically inserted here after authentication -->
+    <main class="container mx-auto p-6 flex-grow z-10 relative">
+        <div class="max-w-3xl mx-auto">
+            <div class="feature-card p-8 rounded-lg mb-8">
+                <h2 class="text-3xl font-bold mb-6 gradient-text text-center">邮件自动化设置</h2>
+                
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4">第一步：转发邮件</h3>
+                    <p class="text-gray-300 mb-4">请将需要代收验证码的邮箱转发到：<strong>toko20231029@gmail.com</strong></p>
+                    <button id="checkButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                        检查设置
+                    </button>
+                </div>
+
+                <div id="formSection" class="hidden">
+                    <h3 class="text-xl font-semibold mb-4">第二步：填写信息</h3>
+                    <form id="emailForm" class="space-y-4">
+                        <div>
+                            <label for="email_resend" class="block text-sm font-medium mb-1">需要转发的邮箱</label>
+                            <input type="email" id="email_resend" name="email_resend" required
+                                   class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="need" class="block text-sm font-medium mb-1">需求</label>
+                            <textarea id="need" name="need" rows="3"
+                                      class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                            提交
+                        </button>
+                    </form>
+                </div>
+
+                <div id="passwordSection" class="hidden mt-8">
+                    <h3 class="text-xl font-semibold mb-4">第三步：您的密码</h3>
+                    <div class="bg-gray-700 p-4 rounded-md">
+                        <p id="passwordDisplay" class="text-lg font-mono"></p>
+                        <button id="copyButton" class="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                            复制密码
+                        </button>
+                    </div>
+                </div>
+
+                <div id="finalStep" class="hidden mt-8">
+                    <h3 class="text-xl font-semibold mb-4">第四步：开始使用</h3>
+                    <p class="text-gray-300 mb-4">您已成功设置邮件自动化。点击下方按钮开始使用，您可以在用户主页查看自动化邮件的相关信息。</p>
+                    <a href="./automation_use_email.html" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 inline-block">
+                        开始使用
+                    </a>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer class="container mx-auto p-6 mt-8 border-t border-gray-700 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
@@ -108,106 +157,65 @@
     </footer>
 
     <script>
-        // Authentication check
-        function checkAuthentication() {
+        // 验证身份
+        async function checkAuth() {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 window.location.href = './login.html';
-            } else {
+                return;
+            }
+
+            try {
+                const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 document.getElementById('loginItem').classList.add('hidden');
                 document.getElementById('userMenu').classList.remove('hidden');
-                loadMainContent();
+                document.getElementById('userAvatar').textContent = response.data.name.charAt(0).toUpperCase();
+            } catch (error) {
+                console.error('Authentication failed:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = './login.html';
             }
         }
 
-        // Load main content after authentication
-        function loadMainContent() {
-            const mainContent = document.getElementById('mainContent');
-            mainContent.innerHTML = `
-                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                    <div class="card p-6 rounded-lg">
-                        <h2 class="text-xl font-bold mb-4 gradient-text">第一步</h2>
-                        <p class="mb-4">请将需要代收验证码的邮箱转发到：</p>
-                        <p class="font-bold">toko20231029@gmail.com</p>
-                    </div>
-                    <div class="card p-6 rounded-lg">
-                        <h2 class="text-xl font-bold mb-4 gradient-text">第二步</h2>
-                        <p class="mb-4">点击下方按钮，填写表单：</p>
-                        <button id="checkBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                            检查
-                        </button>
-                    </div>
-                    <div class="card p-6 rounded-lg">
-                        <h2 class="text-xl font-bold mb-4 gradient-text">第三步</h2>
-                        <p class="mb-4">生成的密码：</p>
-                        <p id="passwordDisplay" class="font-bold"></p>
-                        <button id="copyBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-2">
-                            复制密码
-                        </button>
-                    </div>
-                    <div class="card p-6 rounded-lg">
-                        <h2 class="text-xl font-bold mb-4 gradient-text">第四步</h2>
-                        <p class="mb-4">确认复制后，开始使用：</p>
-                        <button id="startUseBtn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
-                            开始使用
-                        </button>
-                    </div>
-                </div>
-            `;
+        checkAuth();
 
-            // Add event listeners
-            document.getElementById('checkBtn').addEventListener('click', showForm);
-            document.getElementById('copyBtn').addEventListener('click', copyPassword);
-            document.getElementById('startUseBtn').addEventListener('click', startUse);
-        }
+        // 页面交互逻辑
+        document.getElementById('checkButton').addEventListener('click', function() {
+            document.getElementById('formSection').classList.remove('hidden');
+        });
 
-        function showForm() {
-            const form = `
-                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div class="bg-white p-8 rounded-lg">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">填写信息</h2>
-                        <input type="email" id="email_resend" placeholder="需要转发的邮箱" class="w-full p-2 mb-4 border rounded text-gray-800">
-                        <textarea id="need" placeholder="您的需求" class="w-full p-2 mb-4 border rounded text-gray-800"></textarea>
-                        <button id="submitForm" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                            提交
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', form);
-            document.getElementById('submitForm').addEventListener('click', submitForm);
-        }
-
-        async function submitForm() {
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             const email_resend = document.getElementById('email_resend').value;
             const need = document.getElementById('need').value;
+
             try {
                 const response = await axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/test', {
                     email_resend,
                     need
                 });
+
+                document.getElementById('passwordSection').classList.remove('hidden');
                 document.getElementById('passwordDisplay').textContent = response.data.password;
-                document.querySelector('.fixed').remove();
+                document.getElementById('finalStep').classList.remove('hidden');
             } catch (error) {
-                console.error('Error:', error);
-                alert('提交失败，请重试');
+                console.error('Error submitting form:', error);
+                alert('提交失败，请稍后重试');
             }
-        }
+        });
 
-        function copyPassword() {
+        document.getElementById('copyButton').addEventListener('click', function() {
             const password = document.getElementById('passwordDisplay').textContent;
-            navigator.clipboard.writeText(password).then(() => {
+            navigator.clipboard.writeText(password).then(function() {
                 alert('密码已复制到剪贴板');
+            }, function(err) {
+                console.error('无法复制密码: ', err);
             });
-        }
-
-        function startUse() {
-            window.location.href = './automation_use_email.html';
-            alert('自动化邮件的信息可以在用户主页确认');
-        }
-
-        // Initial authentication check
-        checkAuthentication();
+        });
     </script>
 </body>
 </html>
