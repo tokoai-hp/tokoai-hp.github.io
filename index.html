@@ -248,7 +248,7 @@
                     userMenu.classList.remove('hidden');
                     userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
                     userAvatar.addEventListener('click', () => {
-                        window.location.href = 'https://tokoai-hp.github.io';
+                        window.location.href = './dashboard.html';
                     });
                 } catch (error) {
                     console.error('Authentication failed:', error);
