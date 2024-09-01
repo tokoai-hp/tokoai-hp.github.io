@@ -147,28 +147,34 @@
     </footer>
 
     <script>
-        // 身份验证检查
-        function checkAuthentication() {
+        const loginItem = document.getElementById('loginItem');
+        const userMenu = document.getElementById('userMenu');
+        const userAvatar = document.getElementById('userAvatar');
+
+        async function checkAuth() {
             const token = localStorage.getItem('authToken');
-            if (!token) {
-                window.location.href = './login.html';
+            if (token) {
+                try {
+                    const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    loginItem.classList.add('hidden');
+                    userMenu.classList.remove('hidden');
+                    userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
+                } catch (error) {
+                    console.error('Authentication failed:', error);
+                    localStorage.removeItem('authToken');
+                    window.location.href = './login.html';
+                }
             } else {
-                showUserAvatar();
+                window.location.href = './login.html';
             }
         }
 
         // 页面加载时检查身份验证
-        window.onload = checkAuthentication;
-
-        // 显示用户头像
-        function showUserAvatar() {
-            const userEmail = localStorage.getItem('userEmail');
-            if (userEmail) {
-                document.getElementById('loginItem').classList.add('hidden');
-                document.getElementById('userMenu').classList.remove('hidden');
-                document.getElementById('userAvatar').textContent = userEmail[0].toUpperCase();
-            }
-        }
+        window.onload = checkAuth;
 
         // 检查按钮点击事件
         document.getElementById('checkBtn').addEventListener('click', function() {
@@ -221,3 +227,4 @@
     </script>
 </body>
 </html>
+
