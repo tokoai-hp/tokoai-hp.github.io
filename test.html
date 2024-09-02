@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户主页</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #error-message {
+            color: red;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #login-message {
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>用户主页</h1>
+    <div id="login-message" style="display: none;">
+        <p>您尚未登录，请先登录。</p>
+        <a href="https://tokoai-hp.github.io/login.html">前往登录页面</a>
+    </div>
+    <div id="user-info" style="display: none;">
+        <h2>用户信息</h2>
+        <p>姓名: <span id="name"></span></p>
+        <p>是否为试用账户: <span id="isTrial"></span></p>
+        <p>余额: <span id="balance"></span></p>
+        <p>是否为管理员: <span id="isAdmin"></span></p>
+        
+        <h3>邮箱列表</h3>
+        <table id="email-table">
+            <thead>
+                <tr>
+                    <th>邮箱</th>
+                    <th>密码</th>
+                    <th>使用时间</th>
+                    <th>是否启用</th>
+                </tr>
+            </thead>
+            <tbody id="email-list">
+            </tbody>
+        </table>
+    </div>
+    <div id="error-message"></div>
+
+    <script>
+        let verifiedToken = '';
+
+        async function checkAuth() {
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                document.getElementById('login-message').style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                verifiedToken = authToken;
+                getUserInfo();
+            } catch (error) {
+                console.error('验证失败:', error);
+                localStorage.removeItem('authToken');
+                document.getElementById('login-message').style.display = 'block';
+            }
+        }
+
+        async function getUserInfo() {
+            const apiUrl = 'https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/getUserInfo';
+
+            try {
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${verifiedToken}`
+                    }
+                });
+                const data = response.data;
+
+                document.getElementById('name').textContent = data.name;
+                document.getElementById('isTrial').textContent = data.isTrial ? '是' : '否';
+                document.getElementById('balance').textContent = data.balance;
+                document.getElementById('isAdmin').textContent = data.isAdmin ? '是' : '否';
+
+                const emailListElement = document.getElementById('email-list');
+                emailListElement.innerHTML = '';
+                data.email_list.forEach(email => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${email.Email}</td>
+                        <td>${email.password}</td>
+                        <td>${email.used_time}</td>
+                        <td>${email.isActive ? '是' : '否'}</td>
+                    `;
+                    emailListElement.appendChild(row);
+                });
+
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('error-message').textContent = '';
+            } catch (error) {
+                document.getElementById('error-message').textContent = '获取用户信息失败: ' + error.message;
+            }
+        }
+
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
