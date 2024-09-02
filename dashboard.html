@@ -97,6 +97,45 @@
             padding: 10px;
             margin-top: 10px;
         }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
@@ -203,15 +242,24 @@
                         <div class="email-details mt-2">
                             <p><strong>邮件密码:</strong> ${email.password}</p>
                             <p><strong>使用次数:</strong> ${email.used_time}</p>
+                            <div class="mt-2">
+                                <label class="switch">
+                                    <input type="checkbox" ${email.isActive ? 'checked' : ''} onchange="toggleEmail('${email.Email}', this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="ml-2">${email.isActive ? '激活' : '停用'}</span>
+                            </div>
                         </div>
                     </div>
                 `).join('');
 
                 // 添加点击事件监听器
                 document.querySelectorAll('.email-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        const details = this.querySelector('.email-details');
-                        details.style.display = details.style.display === 'none' ? 'block' : 'none';
+                    item.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('slider') && e.target.type !== 'checkbox') {
+                            const details = this.querySelector('.email-details');
+                            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+                        }
                     });
                 });
 
@@ -232,6 +280,27 @@
             });
         }
 
+        function toggleEmail(email, isActive) {
+            const token = getAuthToken();
+            if (!token) return;
+
+            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
+                { 
+                    email_resend: email,
+                    isUnActive: !isActive
+                },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            )
+            .then(response => {
+                console.log('Email status changed:', response.data);
+                getUserInfo(); // 重新加载用户信息以更新UI
+            })
+            .catch(error => {
+                console.error('Error toggling email status:', error);
+                alert('更改邮件状态失败，请重试');
+            });
+        }
+
         function rechargeKami() {
             const kami = document.getElementById('kamiInput').value;
             if (!kami) {
@@ -244,26 +313,26 @@
 
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_check', 
                 { pass: kami },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            .then(response => {
-                const data = response.data;
-                if (data.price !== undefined) {
-                    document.getElementById('rechargeResult').textContent = `充值成功，金额：${data.price.toFixed(1)}`;
-                    getUserInfo(); // 更新用户信息显示
-                } else if (data.message) {
-                    document.getElementById('rechargeResult').textContent = `充值失败：${data.message}`;
-                } else {
-                    document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('rechargeResult').textContent = '充值过程中出错，请重试';
-            });
-        }
+                  { headers: { 'Authorization': `Bearer ${token}` } }
+              )
+              .then(response => {
+                  const data = response.data;
+                  if (data.price !== undefined) {
+                      document.getElementById('rechargeResult').textContent = `充值成功，金额：${data.price.toFixed(1)}`;
+                      getUserInfo(); // 更新用户信息显示
+                  } else if (data.message) {
+                      document.getElementById('rechargeResult').textContent = `充值失败：${data.message}`;
+                  } else {
+                      document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  document.getElementById('rechargeResult').textContent = '充值过程中出错，请重试';
+              });
+          }
 
-        window.onload = getUserInfo;
-    </script>
-</body>
-</html>
+          window.onload = getUserInfo;
+      </script>
+  </body>
+  </html>
