@@ -65,8 +65,8 @@
             overflow: hidden;
         }
         .feature-card:hover {
-            transform: translateY(-30px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
         .card-icon {
             font-size: 2.5rem;
@@ -117,12 +117,13 @@
         }
         .card-container {
             display: flex;
-            justify-content: space-between;
-            align-items: stretch;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
         }
         .feature-card {
-            flex: 1;
+            flex: 1 1 300px;
+            max-width: 400px;
             transition: all 0.5s ease;
         }
         .feature-card .card-content {
@@ -155,17 +156,35 @@
             color: white;
             cursor: pointer;
         }
+        .development-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 768px) {
+            .tokoai-title {
+                font-size: 2.5rem;
+            }
+            .feature-card {
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
     <div class="aurora"></div>
     <div class="stars"></div>
     <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
-        <a href="tokoai-hp.github.io" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a >
+        <a href="tokoai-hp.github.io" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
         <nav>
             <ul class="flex space-x-6 items-center">
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a ></li>
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a ></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
                 <li id="loginItem"><a href="https://tokoai-hp.github.io/login.html" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
                 <li id="userMenu" class="hidden">
                     <div class="user-avatar" id="userAvatar"></div>
@@ -177,7 +196,7 @@
     <main class="container mx-auto p-6 flex-grow z-10 relative">
         <div class="mb-16 mt-16 text-center">
             <h2 class="tokoai-title mb-4 fade-in-text" style="animation-delay: 0.2s;" id="tokoaiTitle">制作自动化</h2>
-            <p class="text-2xl text-gray-300 fade-in-text" style="animation-delay: 0.4s;">探索TokoAI的革命性自动化解决方案，提升您的业务效率</p >
+            <p class="text-2xl text-gray-300 fade-in-text" style="animation-delay: 0.4s;">探索TokoAI的革命性自动化解决方案，提升您的业务效率</p>
         </div>
         <div class="card-container">
             <div class="feature-card p-6 rounded-xl relative" onclick="window.location.href='https://tokoai-hp.github.io/automation_create_email.html'">
@@ -186,34 +205,36 @@
                         <i class="fas fa-envelope-open-text"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-2 text-gray-100">自动化邮箱验证码收取</h3>
-                    <p class="text-gray-300 text-sm">让您和客户不用登录邮箱也能获得验证码，简化操作流程。</p >
+                    <p class="text-gray-300 text-sm">让您和客户不用登录邮箱也能获得验证码，简化操作流程。</p>
                 </div>
                 <div class="card-details">
-                    <p class="text-sm text-blue-400 hover:underline">了解详情</p >
+                    <p class="text-sm text-blue-400 hover:underline">了解详情</p>
                 </div>
             </div>
             <div class="feature-card p-6 rounded-xl relative" onclick="window.location.href='#'">
+                <div class="development-tag">开发中</div>
                 <div class="card-content">
                     <div class="text-4xl mb-4 card-icon">
                         <i class="fas fa-magic"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-2 text-gray-100">AI一键总结/撰写/回复邮件</h3>
-                    <p class="text-gray-300 text-sm">利用AI技术快速处理邮件，提高沟通效率和质量。</p >
+                    <p class="text-gray-300 text-sm">利用AI技术快速处理邮件，提高沟通效率和质量。</p>
                 </div>
                 <div class="card-details">
-                    <p class="text-sm text-blue-400 hover:underline">了解详情</p >
+                    <p class="text-sm text-blue-400 hover:underline">敬请期待</p>
                 </div>
             </div>
             <div class="feature-card p-6 rounded-xl relative" onclick="window.location.href='#'">
+                <div class="development-tag">开发中</div>
                 <div class="card-content">
                     <div class="text-4xl mb-4 card-icon">
                         <i class="fas fa-comments"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-2 text-gray-100">AI微信/网站/电商客服</h3>
-                    <p class="text-gray-300 text-sm">智能客服系统，为您的业务提供24/7全天候支持。</p >
+                    <p class="text-gray-300 text-sm">智能客服系统，为您的业务提供24/7全天候支持。</p>
                 </div>
                 <div class="card-details">
-                    <p class="text-sm text-blue-400 hover:underline">了解详情</p >
+                    <p class="text-sm text-blue-400 hover:underline">敬请期待</p>
                 </div>
             </div>
         </div>
@@ -272,16 +293,16 @@
                     userMenu.classList.remove('hidden');
                     userAvatar.textContent = response.data.name.charAt(0).toUpperCase();
                     userAvatar.addEventListener('click', () => {
-                        window.location.href = './dashboard.html';
-                    });
-                } catch (error) {
-                    console.error('Authentication failed:', error);
-                    localStorage.removeItem('authToken');
-                }
-            }
-        }
+            window.location.href = './dashboard.html';
+        });
+    } catch (error) {
+        console.error('Authentication failed:', error);
+        localStorage.removeItem('authToken');
+    }
+}
+}
 
-        checkAuth();
+checkAuth();
     </script>
 </body>
 </html>
