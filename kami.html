@@ -119,6 +119,41 @@
             color: white;
             cursor: pointer;
         }
+        .kami-display {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .kami-display:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .kami-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: #00FA9A;
+            word-break: break-all;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: rgba(0, 191, 255, 0.2);
+            border: none;
+            color: #00BFFF;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background: rgba(0, 191, 255, 0.4);
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
@@ -166,7 +201,7 @@
         async function checkAuth() {
             const authToken = localStorage.getItem('authToken');
             if (!authToken) {
-                window.location.href = 'https://tokoai-hp.github.io/login.html'; // 重定向到登录页面
+                window.location.href = 'https://tokoai-hp.github.io/login.html';
                 return;
             }
 
@@ -186,7 +221,7 @@
             } catch (error) {
                 console.error('验证失败:', error);
                 localStorage.removeItem('authToken');
-                window.location.href = 'https://tokoai-hp.github.io/login.html'; // 重定向到登录页面
+                window.location.href = 'https://tokoai-hp.github.io/login.html';
             }
         }
 
@@ -210,13 +245,28 @@
                     }
                 );
 
-                resultDiv.textContent = `生成的卡密: ${response.data.pass}`;
+                const kamiCode = response.data.pass;
+                resultDiv.innerHTML = `
+                    <div class="kami-display">
+                        <span class="kami-text">${kamiCode}</span>
+                        <button onclick="copyKami('${kamiCode}')" class="copy-btn">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                    </div>
+                `;
             } catch (error) {
                 resultDiv.textContent = `错误: ${error.response?.data?.message || error.message}`;
             }
         }
 
-        // 页面加载时检查认证
+        function copyKami(kami) {
+            navigator.clipboard.writeText(kami).then(() => {
+                alert('卡密已复制到剪贴板');
+            }, (err) => {
+                console.error('无法复制卡密: ', err);
+            });
+        }
+
         window.onload = checkAuth;
     </script>
 </body>
