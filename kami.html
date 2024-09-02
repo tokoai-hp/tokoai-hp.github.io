@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokoAI - 卡密生成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: 
+                linear-gradient(to bottom, #000428, #004e92),
+                linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 255, 0.1));
+            background-blend-mode: overlay;
+        }
+        .aurora {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: 
+                radial-gradient(ellipse at bottom, rgba(0, 255, 0, 0.2) 0%, transparent 70%),
+                radial-gradient(ellipse at top, rgba(0, 0, 255, 0.2) 0%, transparent 70%);
+            filter: blur(10px);
+            z-index: -1;
+        }
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+            animation: twinkle 5s infinite;
+            z-index: -1;
+        }
+        @keyframes twinkle {
+            0% {transform: scale(1);}
+            50% {transform: scale(1.1);}
+            100% {transform: scale(1);}
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-bottom: 2px solid #4a5568;
+            background-color: transparent;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-bottom-color: #00BFFF;
+        }
+        .input-group label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 10px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            color: #a0aec0;
+        }
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            transform: translateY(-20px);
+            font-size: 0.8rem;
+            color: #00BFFF;
+        }
+        .btn-gradient {
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px 0 rgba(0, 191, 255, 0.5);
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(45deg, #00FA9A, #00BFFF);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(0, 250, 154, 0.5);
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col text-gray-100">
+    <div class="aurora"></div>
+    <div class="stars"></div>
+    <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
+        <a href="#" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
+        <nav>
+            <ul class="flex space-x-6">
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 flex-grow z-10 relative flex items-center justify-center">
+        <div class="max-w-md w-full form-container p-8 rounded-lg">
+            <h2 class="text-3xl font-bold mb-6 text-center gradient-text">卡密生成器</h2>
+            <div id="userInfo" class="mb-4 text-center"></div>
+            <div id="generateSection">
+                <div class="input-group">
+                    <input type="number" id="price" placeholder=" " required>
+                    <label for="price">卡密价格</label>
+                </div>
+                <button onclick="generateKami()" class="w-full btn-gradient">生成卡密</button>
+            </div>
+            <div id="result" class="mt-4 text-center"></div>
+        </div>
+    </main>
+
+    <footer class="container mx-auto p-6 mt-8 border-t border-gray-700 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
+        <div class="flex items-center space-x-4">
+            <span class="font-bold gradient-text">TokoAI</span>
+            <i class="fab fa-weixin text-2xl text-green-400"></i>
+        </div>
+        <div class="text-gray-400">&copy; 2024 TokoAI. All rights reserved.</div>
+    </footer>
+
+    <script>
+        let verifiedToken = '';
+
+        async function checkAuth() {
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                window.location.href = 'login.html'; // 重定向到登录页面
+                return;
+            }
+
+            try {
+                const response = await axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                verifiedToken = authToken;
+                document.getElementById('userInfo').textContent = `欢迎, ${response.data.name || '用户'}`;
+            } catch (error) {
+                console.error('验证失败:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = 'login.html'; // 重定向到登录页面
+            }
+        }
+
+        async function generateKami() {
+            const price = document.getElementById('price').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!verifiedToken || !price) {
+                resultDiv.textContent = '请输入卡密价格';
+                return;
+            }
+
+            try {
+                const response = await axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_wzc', 
+                    { price: parseFloat(price) },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${verifiedToken}`
+                        }
+                    }
+                );
+
+                resultDiv.textContent = `生成的卡密: ${response.data.pass}`;
+            } catch (error) {
+                resultDiv.textContent = `错误: ${error.response?.data?.message || error.message}`;
+            }
+        }
+
+        // 页面加载时检查认证
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
