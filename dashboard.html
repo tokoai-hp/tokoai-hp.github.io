@@ -280,14 +280,14 @@
             });
         }
 
-        function toggleEmail(email, isActive) {
+        function toggleEmail(email, isChecked) {
             const token = getAuthToken();
             if (!token) return;
 
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
                 { 
                     email_resend: email,
-                    isUnActive: !isActive
+                    isUnActive: !isChecked  // 如果开关是开启状态（isChecked为true），则isUnActive为false
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             )
@@ -312,7 +312,7 @@
             if (!token) return;
 
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_check', 
-                { pass: kami },
+                  { pass: kami },
                   { headers: { 'Authorization': `Bearer ${token}` } }
               )
               .then(response => {
