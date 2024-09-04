@@ -151,6 +151,7 @@
             </ul>
         </nav>
     </header>
+
     <main class="container mx-auto p-6 flex-grow z-10 relative">
         <div class="mb-8 mt-8 text-center">
             <h2 class="text-3xl font-bold gradient-text mb-4">用户中心</h2>
@@ -191,6 +192,7 @@
             </div>
         </div>
     </main>
+
     <footer class="container mx-auto p-6 mt-8 border-t border-gray-700 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
         <div class="flex items-center space-x-4">
             <span class="font-bold gradient-text">TokoAI</span>
@@ -198,6 +200,7 @@
         </div>
         <div class="text-gray-400">&copy; 2024 TokoAI. All rights reserved.</div>
     </footer>
+
     <script>
         function getAuthToken() {
             let authToken = localStorage.getItem('authToken');
@@ -207,9 +210,11 @@
             }
             return authToken;
         }
+
         function getUserInfo() {
             const token = getAuthToken();
             if (!token) return;
+
             axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/getUserInfo', {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -217,6 +222,7 @@
                 const data = response.data;
                 document.getElementById('userName').textContent = data.name;
                 document.getElementById('userBalance').textContent = data.balance.toFixed(1);
+
                 // 设置用户状态
                 const statusElement = document.getElementById('userStatus');
                 if (data.balance > 0) {
@@ -226,6 +232,7 @@
                 } else {
                     statusElement.innerHTML = '<span class="status-badge status-expired">到期</span>';
                 }
+
                 document.getElementById('emailList').innerHTML = data.email_list.map(email => `
                     <div class="email-item p-3 rounded-lg">
                         <div class="flex justify-between items-center">
@@ -245,6 +252,7 @@
                         </div>
                     </div>
                 `).join('');
+
                 // 添加点击事件监听器
                 document.querySelectorAll('.email-item').forEach(item => {
                     item.addEventListener('click', function(e) {
@@ -254,10 +262,12 @@
                         }
                     });
                 });
+
                 // 设置用户头像
                 const avatarContent = data.name.charAt(0).toUpperCase();
                 document.getElementById('userAvatar').textContent = avatarContent;
                 document.getElementById('userAvatarLarge').textContent = avatarContent;
+
                 // 显示或隐藏管理员按钮
                 if (data.isAdmin) {
                     document.getElementById('adminSection').style.display = 'block';
@@ -270,7 +280,6 @@
             });
         }
 
-        function toggleEmail(email, isActive) {
         function toggleEmail(email, isChecked) {
             const token = getAuthToken();
             if (!token) return;
@@ -278,7 +287,6 @@
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
                 { 
                     email_resend: email,
-                    isUnActive: !isActive
                     isUnActive: !isChecked  // 如果开关是开启状态（isChecked为true），则isUnActive为false
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
@@ -292,17 +300,18 @@
                 alert('更改邮件状态失败，请重试');
             });
         }
+
         function rechargeKami() {
             const kami = document.getElementById('kamiInput').value;
             if (!kami) {
                 alert('请输入卡密');
                 return;
             }
+
             const token = getAuthToken();
             if (!token) return;
 
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_check', 
-                { pass: kami },
                   { pass: kami },
                   { headers: { 'Authorization': `Bearer ${token}` } }
               )
@@ -322,6 +331,7 @@
                   document.getElementById('rechargeResult').textContent = '充值过程中出错，请重试';
               });
           }
+
           window.onload = getUserInfo;
       </script>
   </body>
