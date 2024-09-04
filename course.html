@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 助手使用指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #000428, #004e92);
+            color: #e0e0e0;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col">
+    <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
+        <a href="#" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">AI 助手使用指南</a>
+        <nav>
+            <ul class="flex space-x-6 items-center">
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">首页</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">关于我们</a></li>
+                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">联系方式</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 flex-grow z-10 relative">
+        <div class="mb-8 mt-8 text-center">
+            <h1 class="text-4xl font-bold gradient-text mb-4">AI 助手使用指南</h1>
+            <p class="text-xl text-gray-300">详细内容请查看下方嵌入的指南</p>
+        </div>
+
+        <div class="content-card p-6 rounded-lg mb-8">
+            <iframe src="https://www.craft.do/s/4RkfkI0Lbsof4l" width="100%" height="600" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </main>
+
+    <footer class="container mx-auto p-6 mt-8 border-t border-gray-700 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
+        <div class="flex items-center space-x-4">
+            <span class="font-bold gradient-text">AI 助手使用指南</span>
+            <div class="flex items-center">
+                <i class="fab fa-github text-2xl text-gray-400 mr-2"></i>
+                <a href="https://github.com/yourusername" class="text-sm text-gray-300 hover:text-blue-400 transition duration-300">GitHub</a>
+            </div>
+        </div>
+        <div class="text-gray-400">&copy; 2024 AI 助手团队. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // 可以在这里添加一些交互性的 JavaScript 代码
+    </script>
+</body>
+</html>
