@@ -196,7 +196,10 @@
     <footer class="container mx-auto p-6 mt-8 border-t border-gray-700 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
         <div class="flex items-center space-x-4">
             <span class="font-bold gradient-text">TokoAI</span>
-            <i class="fab fa-weixin text-2xl text-green-400"></i>
+            <div class="flex items-center">
+                <i class="fab fa-weixin text-2xl text-green-400 mr-2"></i>
+                <span class="text-sm text-gray-300">获取卡密联系v:TokoStephen</span>
+            </div>
         </div>
         <div class="text-gray-400">&copy; 2024 TokoAI. All rights reserved.</div>
     </footer>
@@ -309,30 +312,4 @@
             }
 
             const token = getAuthToken();
-            if (!token) return;
-
-            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_check', 
-                  { pass: kami },
-                  { headers: { 'Authorization': `Bearer ${token}` } }
-              )
-              .then(response => {
-                  const data = response.data;
-                  if (data.price !== undefined) {
-                      document.getElementById('rechargeResult').textContent = `充值成功，金额：${data.price.toFixed(1)}`;
-                      getUserInfo(); // 更新用户信息显示
-                  } else if (data.message) {
-                      document.getElementById('rechargeResult').textContent = `充值失败：${data.message}`;
-                  } else {
-                      document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
-                  }
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  document.getElementById('rechargeResult').textContent = '充值过程中出错，请重试';
-              });
-          }
-
-          window.onload = getUserInfo;
-      </script>
-  </body>
-  </html>
+            if (!token
