@@ -21,6 +21,16 @@
             <button onclick="rechargeKami()" class="bg-blue-500 text-white p-2">充值</button>
         </div>
         <p id="rechargeResult"></p>
+        
+        <!-- 新增：子提取码生成部分 -->
+        <div id="subcodeGenerator" class="mt-4 p-4 bg-white rounded shadow">
+            <h2 class="text-xl font-bold mb-2">生成子提取码</h2>
+            <input type="number" id="kamiNumber" placeholder="子提取码数量" class="border p-2 mb-2 w-full">
+            <input type="number" id="usedQuota" placeholder="使用次数限制" class="border p-2 mb-2 w-full">
+            <select id="emailSelect" class="border p-2 mb-2 w-full"></select>
+            <button onclick="generateSubcode()" class="bg-green-500 text-white p-2 w-full">生成子提取码</button>
+            <div id="subcodeResult" class="mt-2"></div>
+        </div>
     </div>
 
     <script>
@@ -46,7 +56,7 @@
                 document.getElementById('userBalance').textContent = data.balance.toFixed(1);
                 document.getElementById('userStatus').textContent = data.balance > 0 ? '会员' : (data.isTrial ? '试用' : '到期');
 
-                document.getElementById('emailList').innerHTML = data.email_list.map(email => `
+                const emailListHtml = data.email_list.map(email => `
                     <div class="email-item mb-2">
                         <span>${email.Email}</span>
                         <span>${email.isActive ? '使用中' : '未使用'}</span>
@@ -57,6 +67,13 @@
                         <p>使用次数: ${email.used_time}</p>
                     </div>
                 `).join('');
+                document.getElementById('emailList').innerHTML = emailListHtml;
+
+                // 更新邮箱选择下拉菜单
+                const emailSelect = document.getElementById('emailSelect');
+                emailSelect.innerHTML = data.email_list.map(email => 
+                    `<option value="${email.Email}">${email.Email}</option>`
+                ).join('');
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -116,6 +133,40 @@
             .catch(error => {
                 console.error('Error:', error);
                 document.getElementById('rechargeResult').textContent = '充值失败，请稍后重试';
+            });
+        }
+
+        function generateSubcode() {
+            const token = getAuthToken();
+            if (!token) return;
+
+            const kamiNumber = document.getElementById('kamiNumber').value;
+            const usedQuota = document.getElementById('usedQuota').value;
+            const email = document.getElementById('emailSelect').value;
+
+            if (!kamiNumber || !usedQuota || !email) {
+                alert('请填写所有必要信息');
+                return;
+            }
+
+            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/generate_subcode', 
+                { 
+                    kamiNumber: parseInt(kamiNumber),
+                    usedQuota: parseInt(usedQuota),
+                    email: email
+                },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            )
+            .then(response => {
+                const subcodes = response.data;
+                const resultHtml = subcodes.map((code, index) => 
+                    `<p>子提取码 ${index + 1}: ${code}</p>`
+                ).join('');
+                document.getElementById('subcodeResult').innerHTML = resultHtml;
+            })
+            .catch(error => {
+                console.error('Error generating subcodes:', error);
+                alert('生成子提取码失败，请重试');
             });
         }
 
