@@ -281,43 +281,45 @@
         }
 
         function toggleEmail(email, isChecked) {
-            const token = getAuthToken();
-            if (!token) return;
+    const token = getAuthToken();
+    if (!token) return;
 
-            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
-                { 
-                    email_resend: email,
-                    isUnActive: !isChecked  // 如果开关是开启状态（isChecked为true），则isUnActive为false
-                },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            .then(response => {
-                console.log('Email status changed:', response.data);
-                // 更新UI以反映新状态
-                const emailItem = document.querySelector(`.email-item:has(.email-address:contains("${email}"))`);
-                if (emailItem) {
-                    const statusIndicator = emailItem.querySelector('.status-indicator');
-                    const statusText = emailItem.querySelector('.email-status');
-                    if (isChecked) {
-                        statusIndicator.classList.remove('bg-red-500');
-                        statusIndicator.classList.add('bg-green-500');
-                        statusIndicator.title = '使用中';
-                        statusText.textContent = '激活';
-                    } else {
-                        statusIndicator.classList.remove('bg-green-500');
-                        statusIndicator.classList.add('bg-red-500');
-                        statusIndicator.title = '未使用';
-                        statusText.textContent = '停用';
-                    }
-                }
-                // 显示操作结果提示
-                alert(`邮箱 ${email} 已${isChecked ? '开启' : '关闭'}`);
-            })
-            .catch(error => {
-                console.error('Error toggling email status:', error);
-                alert('更改邮件状态失败，请重试');
-            });
+    axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
+        { 
+            email_resend: email,
+            isUnActive: !isChecked  // 如果开关是开启状态（isChecked为true），则isUnActive为false
+        },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+        const data = response.data;
+        console.log('Email status changed:', data);
+        // 更新UI以反映新状态
+        const emailItem = document.querySelector(`.email-item:has(.email-address:contains("${email}"))`);
+        if (emailItem) {
+            const statusIndicator = emailItem.querySelector('.status-indicator');
+            const statusText = emailItem.querySelector('.email-status');
+            if (data.isActive) {
+                statusIndicator.classList.remove('bg-red-500');
+                statusIndicator.classList.add('bg-green-500');
+                statusIndicator.title = '使用中';
+                statusText.textContent = '激活';
+            } else {
+                statusIndicator.classList.remove('bg-green-500');
+                statusIndicator.classList.add('bg-red-500');
+                statusIndicator.title = '未使用';
+                statusText.textContent = '停用';
+            }
         }
+        // 显示操作结果提示
+        alert(`邮箱 ${data.Email} 当前状态为${data.isActive ? '开启' : '关闭'}`);
+    })
+    .catch(error => {
+        console.error('Error toggling email status:', error);
+        alert('更改邮件状态失败，请重试');
+    });
+}
+
 
         function rechargeKami() {
             const kami = document.getElementById('kamiInput').value;
@@ -354,4 +356,3 @@
       </script>
   </body>
   </html>
-复
