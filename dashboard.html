@@ -22,18 +22,19 @@
         </div>
         <p id="rechargeResult"></p>
         
-        <!-- 新增：子提取码生成部分 -->
-        <div id="subcodeGenerator" class="mt-4 p-4 bg-white rounded shadow">
-            <h2 class="text-xl font-bold mb-2">生成子提取码</h2>
+        <!-- 子提取码生成部分 -->
+        <div id="subcodeGenerator" class="mt-4 p-4 bg-white rounded shadow hidden">
+            <h2 class="text-xl font-bold mb-2">生成子提取码 - <span id="selectedEmail"></span></h2>
             <input type="number" id="kamiNumber" placeholder="子提取码数量" class="border p-2 mb-2 w-full">
             <input type="number" id="usedQuota" placeholder="使用次数限制" class="border p-2 mb-2 w-full">
-            <select id="emailSelect" class="border p-2 mb-2 w-full"></select>
             <button onclick="generateSubcode()" class="bg-green-500 text-white p-2 w-full">生成子提取码</button>
             <div id="subcodeResult" class="mt-2"></div>
         </div>
     </div>
 
     <script>
+        let selectedEmail = '';
+
         function getAuthToken() {
             let authToken = localStorage.getItem('authToken');
             if (!authToken) {
@@ -57,23 +58,20 @@
                 document.getElementById('userStatus').textContent = data.balance > 0 ? '会员' : (data.isTrial ? '试用' : '到期');
 
                 const emailListHtml = data.email_list.map(email => `
-                    <div class="email-item mb-2">
+                    <div class="email-item mb-2 p-2 bg-white rounded shadow">
                         <span>${email.Email}</span>
                         <span>${email.isActive ? '使用中' : '未使用'}</span>
-                        <button onclick="toggleEmail('${email.Email}', ${!email.isActive})">
+                        <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 text-white p-1 rounded">
                             ${email.isActive ? '停用' : '激活'}
+                        </button>
+                        <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-green-500 text-white p-1 rounded ml-2">
+                            生成子提取码
                         </button>
                         <p>邮件密码: ${email.password}</p>
                         <p>使用次数: ${email.used_time}</p>
                     </div>
                 `).join('');
                 document.getElementById('emailList').innerHTML = emailListHtml;
-
-                // 更新邮箱选择下拉菜单
-                const emailSelect = document.getElementById('emailSelect');
-                emailSelect.innerHTML = data.email_list.map(email => 
-                    `<option value="${email.Email}">${email.Email}</option>`
-                ).join('');
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -136,15 +134,21 @@
             });
         }
 
+        function showSubcodeGenerator(email) {
+            selectedEmail = email;
+            document.getElementById('selectedEmail').textContent = email;
+            document.getElementById('subcodeGenerator').classList.remove('hidden');
+            document.getElementById('subcodeResult').innerHTML = '';
+        }
+
         function generateSubcode() {
             const token = getAuthToken();
             if (!token) return;
 
             const kamiNumber = document.getElementById('kamiNumber').value;
             const usedQuota = document.getElementById('usedQuota').value;
-            const email = document.getElementById('emailSelect').value;
 
-            if (!kamiNumber || !usedQuota || !email) {
+            if (!kamiNumber || !usedQuota || !selectedEmail) {
                 alert('请填写所有必要信息');
                 return;
             }
@@ -153,15 +157,13 @@
                 { 
                     kamiNumber: parseInt(kamiNumber),
                     usedQuota: parseInt(usedQuota),
-                    email: email
+                    email: selectedEmail
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             )
             .then(response => {
                 const subcodes = response.data;
-                const resultHtml = subcodes.map((code, index) => 
-                    `<p>子提取码 ${index + 1}: ${code}</p>`
-                ).join('');
+                const resultHtml = subcodes.map(code => `<p>${code}</p>`).join('');
                 document.getElementById('subcodeResult').innerHTML = resultHtml;
             })
             .catch(error => {
