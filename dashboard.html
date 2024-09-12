@@ -83,6 +83,36 @@
             content: '✦';
             font-size: 1.2em;
         }
+        .copy-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+        .subcode-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .subcode-text {
+            font-family: monospace;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
@@ -307,15 +337,52 @@
             .then(response => {
                 const subcodes = response.data;
                 const resultElement = document.getElementById('subcodeResult');
-                resultElement.innerHTML = '<h4 class="font-bold mb-2 text-white">生成的子提取码：</h4>';
-                subcodes.forEach(subcode => {
-                    resultElement.innerHTML += `<p class="mb-1 text-gray-300">${subcode}</p>`;
+                resultElement.innerHTML = '<h4 class="font-bold mb-4 text-white">生成的子提取码：</h4>';
+                subcodes.forEach((subcode, index) => {
+                    const subcodeText = `${selectedEmail} ${subcode}`;
+                    resultElement.innerHTML += `
+                        <div class="subcode-item">
+                            <span class="subcode-text">${subcodeText}</span>
+                            <button class="copy-button" onclick="copySubcode(${index})">复制</button>
+                        </div>
+                    `;
                 });
+                // 添加全部复制按钮
+                resultElement.innerHTML += `
+                    <div class="mt-4">
+                        <button class="copy-button" onclick="copyAllSubcodes()">复制全部</button>
+                    </div>
+                `;
             })
             .catch(error => {
                 console.error('Error generating subcodes:', error);
                 alert('生成子提取码失败，请重试');
             });
+        }
+
+        function copySubcode(index) {
+            const subcodeElements = document.querySelectorAll('.subcode-text');
+            if (subcodeElements[index]) {
+                navigator.clipboard.writeText(subcodeElements[index].textContent)
+                    .then(() => {
+                        alert('子提取码已复制到剪贴板');
+                    })
+                    .catch(err => {
+                        console.error('无法复制文本: ', err);
+                    });
+            }
+        }
+
+        function copyAllSubcodes() {
+            const subcodeElements = document.querySelectorAll('.subcode-text');
+            const allSubcodes = Array.from(subcodeElements).map(el => el.textContent).join('\n');
+            navigator.clipboard.writeText(allSubcodes)
+                .then(() => {
+                    alert('所有子提取码已复制到剪贴板');
+                })
+                .catch(err => {
+                    console.error('无法复制文本: ', err);
+                });
         }
 
         window.onload = getUserInfo;
