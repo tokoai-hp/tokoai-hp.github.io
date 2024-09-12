@@ -292,14 +292,13 @@
         { headers: { 'Authorization': `Bearer ${token}` } }
     )
     .then(response => {
-        const data = response.data;
-        console.log('Email status changed:', data);
+        console.log('Email status changed:', response.data);
         // 更新UI以反映新状态
         const emailItem = document.querySelector(`.email-item:has(.email-address:contains("${email}"))`);
         if (emailItem) {
             const statusIndicator = emailItem.querySelector('.status-indicator');
             const statusText = emailItem.querySelector('.email-status');
-            if (data.isActive) {
+            if (isChecked) {
                 statusIndicator.classList.remove('bg-red-500');
                 statusIndicator.classList.add('bg-green-500');
                 statusIndicator.title = '使用中';
@@ -312,7 +311,7 @@
             }
         }
         // 显示操作结果提示
-        alert(`邮箱 ${data.Email} 当前状态为${data.isActive ? '开启' : '关闭'}`);
+        alert(`邮箱 ${email} 已${isChecked ? '开启' : '关闭'}`);
     })
     .catch(error => {
         console.error('Error toggling email status:', error);
