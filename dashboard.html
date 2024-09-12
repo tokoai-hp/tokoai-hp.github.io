@@ -48,10 +48,10 @@
 
                 document.getElementById('emailList').innerHTML = data.email_list.map(email => `
                     <div class="email-item mb-2">
-                        <span class="email-address">${email.Email}</span>
-                        <span class="email-status">${email.isActive ? '使用中' : '未使用'}</span>
-                        <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 text-white p-1 ml-2">
-                            ${email.isActive ? '关闭' : '开启'}
+                        <span>${email.Email}</span>
+                        <span>${email.isActive ? '使用中' : '未使用'}</span>
+                        <button onclick="toggleEmail('${email.Email}', ${!email.isActive})">
+                            ${email.isActive ? '停用' : '激活'}
                         </button>
                         <p>邮件密码: ${email.password}</p>
                         <p>使用次数: ${email.used_time}</p>
@@ -67,10 +67,7 @@
 
         function toggleEmail(email, isUnActive) {
             const token = getAuthToken();
-            if (!token) {
-                alert('未找到授权令牌，请重新登录');
-                return;
-            }
+            if (!token) return;
 
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
                 { 
@@ -82,33 +79,13 @@
             .then(response => {
                 const data = response.data;
                 console.log('Email status changed:', data);
-
-                // 使用返回的 Email 和 isActive 参数给用户提示
-                const newStatus = data.isActive ? '开启' : '关闭';
-                alert(`邮箱 ${data.Email} 的状态已更改为${newStatus}`);
-
-                // 更新UI
-                updateEmailItemUI(email, data.isActive);
-
-                // 重新加载用户信息以确保显示最新状态
-                getUserInfo();
+                alert(`邮箱 ${data.Email} 已${data.isActive ? '激活' : '停用'}`);
+                getUserInfo(); // 重新加载用户信息以更新显示
             })
             .catch(error => {
                 console.error('Error toggling email status:', error);
                 alert('更改邮件状态失败，请重试');
             });
-        }
-
-        function updateEmailItemUI(email, isActive) {
-            const emailItem = document.querySelector(`.email-item:has(.email-address:contains("${email}"))`);
-            if (emailItem) {
-                const statusText = emailItem.querySelector('.email-status');
-                const toggleButton = emailItem.querySelector('button');
-                
-                statusText.textContent = isActive ? '使用中' : '未使用';
-                toggleButton.textContent = isActive ? '关闭' : '开启';
-                toggleButton.onclick = () => toggleEmail(email, !isActive);
-            }
         }
 
         function rechargeKami() {
