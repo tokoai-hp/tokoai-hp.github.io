@@ -136,21 +136,6 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        .subcode-generator {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .subcode-generator:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .subcode-result {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
@@ -206,16 +191,16 @@
                 <p id="rechargeResult" class="mt-4 text-gray-300"></p>
             </div>
         </div>
-        <div class="mt-8">
-            <div id="subcodeGenerator" class="subcode-generator p-6 rounded-lg">
-                <h3 class="text-xl font-bold mb-4 gradient-text">生成子提取码</h3>
-                <div class="flex items-center space-x-4 mb-4">
-                    <input type="number" id="kamiNumber" placeholder="子提取码数量" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
-                    <input type="number" id="usedQuota" placeholder="使用次数限制" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
-                </div>
-                <button onclick="generateSubcode()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition duration-300 w-full">生成子提取码</button>
-                <div id="subcodeResult" class="subcode-result mt-4"></div>
+        
+        <!-- 子提取码生成部分 -->
+        <div id="subcodeGenerator" class="mt-8 user-card p-6 rounded-lg hidden">
+            <h3 class="text-xl font-bold mb-4 gradient-text">生成子提取码 - <span id="selectedEmail"></span></h3>
+            <div class="flex items-center space-x-4 mb-4">
+                <input type="number" id="kamiNumber" placeholder="子提取码数量" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
+                <input type="number" id="usedQuota" placeholder="使用次数限制" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
             </div>
+            <button onclick="generateSubcode()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition duration-300 w-full">生成子提取码</button>
+            <div id="subcodeResult" class="mt-4 text-gray-300"></div>
         </div>
     </main>
 
@@ -227,9 +212,7 @@
         <div class="text-gray-400">&copy; 2024 TokoAI. All rights reserved.</div>
     </footer>
 
-     <script>
-        let selectedEmail = '';
-
+    <script>
         function getAuthToken() {
             let authToken = localStorage.getItem('authToken');
             if (!authToken) {
@@ -299,7 +282,7 @@
                 document.getElementById('userAvatar').textContent = avatarContent;
                 document.getElementById('userAvatarLarge').textContent = avatarContent;
 
-                // 显示或隐藏管理员按钮
+                                // 显示或隐藏管理员按钮
                 if (data.isAdmin) {
                     document.getElementById('adminSection').style.display = 'block';
                 }
@@ -318,7 +301,7 @@
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
                 { 
                     email_resend: email,
-                    isUnActive: !isChecked
+                    isUnActive: !isChecked  // 如果开关是开启状态（isChecked为true），则isUnActive为false
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             )
@@ -383,7 +366,8 @@
 
         function showSubcodeGenerator(email) {
             selectedEmail = email;
-            document.getElementById('subcodeGenerator').style.display = 'block';
+            document.getElementById('selectedEmail').textContent = email;
+            document.getElementById('subcodeGenerator').classList.remove('hidden');
             document.getElementById('subcodeResult').innerHTML = '';
         }
 
@@ -409,15 +393,15 @@
             )
             .then(response => {
                 const subcodes = response.data;
-                const resultHtml = subcodes.map(code => `<p class="mb-1">${code}</p>`).join('');
-                document.getElementById('subcodeResult').innerHTML = `
-                    <h4 class="text-lg font-semibold mb-2">生成的子提取码：</h4>
-                    <div class="bg-gray-800 p-3 rounded-lg">${resultHtml}</div>
-                `;
+                const resultElement = document.getElementById('subcodeResult');
+                resultElement.innerHTML = '<h4 class="font-bold mb-2">生成的子提取码：</h4>';
+                subcodes.forEach(subcode => {
+                    resultElement.innerHTML += `<p class="mb-1">${subcode}</p>`;
+                });
             })
             .catch(error => {
                 console.error('Error generating subcodes:', error);
-                document.getElementById('subcodeResult').innerHTML = '<p class="text-red-500">生成子提取码失败，请重试</p>';
+                alert('生成子提取码失败，请重试');
             });
         }
 
