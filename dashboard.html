@@ -5,34 +5,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TokoAI - 用户中心</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">用户中心</h1>
-        <div id="userInfo" class="mb-4">
-            <p>用户名: <span id="userName"></span></p>
-            <p>余额: <span id="userBalance"></span></p>
-            <p>状态: <span id="userStatus"></span></p>
-        </div>
-        <div id="emailList" class="mb-4"></div>
-        <div class="mb-4">
-            <input type="text" id="kamiInput" placeholder="输入卡密" class="border p-2">
-            <button onclick="rechargeKami()" class="bg-blue-500 text-white p-2">充值</button>
-        </div>
-        <p id="rechargeResult"></p>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
-        <!-- 子提取码生成部分 -->
-        <div id="subcodeGenerator" class="mt-4 p-4 bg-white rounded shadow hidden">
-            <h2 class="text-xl font-bold mb-2">生成子提取码 - <span id="selectedEmail"></span></h2>
-            <input type="number" id="kamiNumber" placeholder="子提取码数量" class="border p-2 mb-2 w-full">
-            <input type="number" id="usedQuota" placeholder="使用次数限制" class="border p-2 mb-2 w-full">
-            <button onclick="generateSubcode()" class="bg-green-500 text-white p-2 w-full">生成子提取码</button>
-            <div id="subcodeResult" class="mt-2"></div>
-        </div>
-    </div>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #000428, #004e92);
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .user-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .email-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .email-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        .balance-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .status-member {
+            background: linear-gradient(45deg, #4A90E2, #50E3C2);
+            color: white;
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+        }
+        .status-member::before {
+            content: '✦';
+            font-size: 1.2em;
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .email-details {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .subcode-generator {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .subcode-generator:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .subcode-result {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col text-gray-100">
+    <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
+        <a href="./" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
+        <nav>
+            <ul class="flex space-x-6 items-center">
+                <li><a href="https://tokoai-hp.github.io/product.html" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
+                <li><a href="https://tokoai-hp.github.io/course.html" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
+                <li id="userMenu">
+                    <div class="user-avatar w-8 h-8 text-sm" id="userAvatar"></div>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-    <script>
+    <main class="container mx-auto p-6 flex-grow z-10 relative">
+        <div class="mb-8 mt-8 text-center">
+            <h2 class="text-3xl font-bold gradient-text mb-4">用户中心</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="user-card p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4 gradient-text">个人信息</h3>
+                <div id="userInfo" class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="user-avatar" id="userAvatarLarge"></div>
+                        <div>
+                            <p class="text-xl font-semibold" id="userName"></p>
+                            <div id="userStatus" class="mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="balance-circle">
+                        <span class="text-sm">余额</span>
+                        <span id="userBalance" class="text-2xl"></span>
+                    </div>
+                </div>
+                <div id="adminSection" class="mt-4" style="display: none;">
+                    <a href="./kami.html" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-300">创建卡密</a>
+                </div>
+            </div>
+            <div class="user-card p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4 gradient-text">邮件库</h3>
+                <div id="emailList" class="grid grid-cols-1 gap-3 max-h-48 overflow-y-auto"></div>
+            </div>
+        </div>
+        <div class="mt-8">
+            <div class="user-card p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4 gradient-text">卡密充值(v:TokoStephen)</h3>
+                <div class="flex items-center space-x-4">
+                    <input type="text" id="kamiInput" placeholder="输入卡密" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
+                    <button onclick="rechargeKami()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition duration-300">充值</button>
+                </div>
+                <p id="rechargeResult" class="mt-4 text-gray-300"></p>
+            </div>
+        </div>
+        <div class="mt-8">
+            <div id="subcodeGenerator" class="subcode-generator p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4 gradient-text">生成子提取码</h3>
+                <div class="flex items-center space-x-4 mb-4">
+                    <input type="number" id="kamiNumber" placeholder="子提取码数量" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
+                    <input type="number" id="usedQuota" placeholder="使用次数限制" class="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow">
+                </div>
+                <button onclick="generateSubcode()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition duration-300 w-full">生成子提取码</button>
+                <div id="subcodeResult" class="subcode-result mt-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="container mx-auto p-6 mt-8 border-t border-gray-700 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
+        <div class="flex items-center space-x-4">
+            <span class="font-bold gradient-text">TokoAI</span>
+            <i class="fab fa-weixin text-2xl text-green-400"></i>
+        </div>
+        <div class="text-gray-400">&copy; 2024 TokoAI. All rights reserved.</div>
+    </footer>
+
+     <script>
         let selectedEmail = '';
 
         function getAuthToken() {
@@ -55,23 +250,59 @@
                 const data = response.data;
                 document.getElementById('userName').textContent = data.name;
                 document.getElementById('userBalance').textContent = data.balance.toFixed(1);
-                document.getElementById('userStatus').textContent = data.balance > 0 ? '会员' : (data.isTrial ? '试用' : '到期');
 
-                const emailListHtml = data.email_list.map(email => `
-                    <div class="email-item mb-2 p-2 bg-white rounded shadow">
-                        <span>${email.Email}</span>
-                        <span>${email.isActive ? '使用中' : '未使用'}</span>
-                        <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 text-white p-1 rounded">
-                            ${email.isActive ? '停用' : '激活'}
-                        </button>
-                        <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-green-500 text-white p-1 rounded ml-2">
-                            生成子提取码
-                        </button>
-                        <p>邮件密码: ${email.password}</p>
-                        <p>使用次数: ${email.used_time}</p>
+                // 设置用户状态
+                const statusElement = document.getElementById('userStatus');
+                if (data.balance > 0) {
+                    statusElement.innerHTML = '<span class="status-badge status-member">会员</span>';
+                } else if (data.isTrial) {
+                    statusElement.innerHTML = '<span class="status-badge status-trial">试用</span>';
+                } else {
+                    statusElement.innerHTML = '<span class="status-badge status-expired">到期</span>';
+                }
+
+                document.getElementById('emailList').innerHTML = data.email_list.map(email => `
+                    <div class="email-item p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="email-address truncate flex-grow">${email.Email}</span>
+                            <span class="status-indicator ${email.isActive ? 'bg-green-500' : 'bg-red-500'}" title="${email.isActive ? '使用中' : '未使用'}"></span>
+                        </div>
+                        <div class="email-details mt-2">
+                            <p><strong>邮件密码:</strong> ${email.password}</p>
+                            <p><strong>使用次数:</strong> ${email.used_time}</p>
+                            <div class="mt-2">
+                                <label class="switch">
+                                    <input type="checkbox" ${email.isActive ? 'checked' : ''} onchange="toggleEmail('${email.Email}', this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="ml-2 email-status">${email.isActive ? '激活' : '停用'}</span>
+                            </div>
+                            <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300 mt-2">
+                                生成子提取码
+                            </button>
+                        </div>
                     </div>
                 `).join('');
-                document.getElementById('emailList').innerHTML = emailListHtml;
+
+                // 添加点击事件监听器
+                document.querySelectorAll('.email-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('slider') && e.target.type !== 'checkbox' && e.target.tagName !== 'BUTTON') {
+                            const details = this.querySelector('.email-details');
+                            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+                        }
+                    });
+                });
+
+                // 设置用户头像
+                const avatarContent = data.name.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = avatarContent;
+                document.getElementById('userAvatarLarge').textContent = avatarContent;
+
+                // 显示或隐藏管理员按钮
+                if (data.isAdmin) {
+                    document.getElementById('adminSection').style.display = 'block';
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -80,22 +311,38 @@
             });
         }
 
-        function toggleEmail(email, isUnActive) {
+        function toggleEmail(email, isChecked) {
             const token = getAuthToken();
             if (!token) return;
 
             axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
                 { 
                     email_resend: email,
-                    isUnActive: isUnActive
+                    isUnActive: !isChecked
                 },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             )
             .then(response => {
-                const data = response.data;
-                console.log('Email status changed:', data);
-                alert(`邮箱 ${data.Email} 已${data.isActive ? '激活' : '停用'}`);
-                getUserInfo(); // 重新加载用户信息以更新显示
+                console.log('Email status changed:', response.data);
+                // 更新UI以反映新状态
+                const emailItem = document.querySelector(`.email-item:has(.email-address:contains("${email}"))`);
+                if (emailItem) {
+                    const statusIndicator = emailItem.querySelector('.status-indicator');
+                    const statusText = emailItem.querySelector('.email-status');
+                    if (isChecked) {
+                        statusIndicator.classList.remove('bg-red-500');
+                        statusIndicator.classList.add('bg-green-500');
+                        statusIndicator.title = '使用中';
+                        statusText.textContent = '激活';
+                    } else {
+                        statusIndicator.classList.remove('bg-green-500');
+                        statusIndicator.classList.add('bg-red-500');
+                        statusIndicator.title = '未使用';
+                        statusText.textContent = '停用';
+                    }
+                }
+                // 显示操作结果提示
+                alert(`邮箱 ${email} 已${isChecked ? '开启' : '关闭'}`);
             })
             .catch(error => {
                 console.error('Error toggling email status:', error);
@@ -130,14 +377,13 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('rechargeResult').textContent = '充值失败，请稍后重试';
+                document.getElementById('rechargeResult').textContent = '充值过程中出错，请重试';
             });
         }
 
         function showSubcodeGenerator(email) {
             selectedEmail = email;
-            document.getElementById('selectedEmail').textContent = email;
-            document.getElementById('subcodeGenerator').classList.remove('hidden');
+            document.getElementById('subcodeGenerator').style.display = 'block';
             document.getElementById('subcodeResult').innerHTML = '';
         }
 
@@ -163,17 +409,19 @@
             )
             .then(response => {
                 const subcodes = response.data;
-                const resultHtml = subcodes.map(code => `<p>${code}</p>`).join('');
-                document.getElementById('subcodeResult').innerHTML = resultHtml;
+                const resultHtml = subcodes.map(code => `<p class="mb-1">${code}</p>`).join('');
+                document.getElementById('subcodeResult').innerHTML = `
+                    <h4 class="text-lg font-semibold mb-2">生成的子提取码：</h4>
+                    <div class="bg-gray-800 p-3 rounded-lg">${resultHtml}</div>
+                `;
             })
             .catch(error => {
                 console.error('Error generating subcodes:', error);
-                alert('生成子提取码失败，请重试');
+                document.getElementById('subcodeResult').innerHTML = '<p class="text-red-500">生成子提取码失败，请重试</p>';
             });
         }
 
-        // 页面加载时获取用户信息
-        getUserInfo();
+        window.onload = getUserInfo;
     </script>
 </body>
 </html>
