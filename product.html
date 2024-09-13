@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokoAI - 自动化配置邮件服务</title>
+    <title>TokoAI - 自动化配置邮件服务定价</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -53,31 +53,39 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .service-container {
+        .pricing-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-        .membership-type {
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #00BFFF;
+            border-radius: 12px;
             transition: all 0.3s ease;
         }
-        .membership-type:hover {
+        .pricing-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 191, 255, 0.4);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
         }
-        .user-initial {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+        .discount-badge {
             background: linear-gradient(45deg, #00BFFF, #00FA9A);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
             color: white;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        .current-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -97,37 +105,57 @@
     </header>
 
     <main class="container mx-auto p-6 flex-grow z-10 relative">
-        <div class="max-w-4xl mx-auto service-container p-8 rounded-lg">
-            <h1 class="text-3xl font-bold mb-6 text-center gradient-text">Toko自动化配置邮件服务</h1>
-            <p class="text-center mb-8 text-gray-300">（暂时不支持gmail）</p>
+        <h1 class="text-3xl font-bold mb-6 text-center gradient-text">TokoAI 自动化配置邮件服务</h1>
+        <p class="text-center mb-12 text-gray-300">选择适合您的计划，开始使用我们的自动化邮件服务（暂时不支持gmail）</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 免费用户 -->
+            <div class="pricing-card p-6 relative">
+                <h2 class="text-xl font-semibold mb-4 text-center gradient-text">免费用户</h2>
+                <div class="text-center mb-6">
+                    <span class="current-price">¥0</span>
+                    <span class="text-gray-300">/永久</span>
+                </div>
+                <ul class="space-y-2 mb-6 text-gray-300">
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>免费使用自动化邮件转发服务两天</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>到期后已配置的邮件自动失效</li>
+                </ul>
+                <button class="w-full bg-gradient-to-r from-blue-400 to-green-400 text-white py-2 rounded-lg hover:from-blue-500 hover:to-green-500 transition duration-300">开始使用</button>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="membership-type p-6 rounded-lg">
-                    <h2 class="text-xl font-semibold mb-4 gradient-text">免费用户</h2>
-                    <ul class="list-disc list-inside text-gray-300">
-                        <li>免费使用自动化邮件转发服务两天</li>
-                        <li>到期后已配置的邮件自动失效</li>
-                    </ul>
+            <!-- 普通会员 -->
+            <div class="pricing-card p-6 relative">
+                <div class="discount-badge">限时优惠 26%</div>
+                <h2 class="text-xl font-semibold mb-4 text-center gradient-text">普通会员</h2>
+                <div class="text-center mb-6">
+                    <div class="original-price">¥38/月</div>
+                    <span class="current-price">¥28</span>
+                    <span class="text-gray-300">/月</span>
                 </div>
-                
-                <div class="membership-type p-6 rounded-lg">
-                    <h2 class="text-xl font-semibold mb-4 gradient-text">普通会员（28r）</h2>
-                    <ul class="list-disc list-inside text-gray-300">
-                        <li>100次邮件收取次数</li>
-                        <li>超出后0.28/条收费（直接从余额扣取）</li>
-                        <li>不需要继续使用的邮箱可以在主页解除</li>
-                    </ul>
+                <ul class="space-y-2 mb-6 text-gray-300">
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>100次邮件收取次数</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>超出后0.28/条收费</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>可随时解除不需要的邮箱</li>
+                </ul>
+                <button class="w-full bg-gradient-to-r from-blue-400 to-green-400 text-white py-2 rounded-lg hover:from-blue-500 hover:to-green-500 transition duration-300">立即订阅</button>
+            </div>
+            
+            <!-- 高级会员 -->
+            <div class="pricing-card p-6 relative">
+                <div class="discount-badge">限时优惠 55%</div>
+                <h2 class="text-xl font-semibold mb-4 text-center gradient-text">高级会员</h2>
+                <div class="text-center mb-6">
+                    <div class="original-price">¥88/月</div>
+                    <span class="current-price">¥40</span>
+                    <span class="text-gray-300">/月</span>
                 </div>
-                
-                <div class="membership-type p-6 rounded-lg">
-                    <h2 class="text-xl font-semibold mb-4 gradient-text">高级会员（40r）</h2>
-                    <ul class="list-disc list-inside text-gray-300">
-                        <li>200次邮件收取</li>
-                        <li>超出后0.20/条收费（直接从余额扣取）</li>
-                        <li>不需要继续使用的邮箱可以在主页解除</li>
-                        <li>获得防二次倒卖功能：可以设置子提取码的收邮件的次数</li>
-                    </ul>
-                </div>
+                <ul class="space-y-2 mb-6 text-gray-300">
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>200次邮件收取</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>超出后0.20/条收费</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>可随时解除不需要的邮箱</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>防二次倒卖功能</li>
+                </ul>
+                <button class="w-full bg-gradient-to-r from-blue-400 to-green-400 text-white py-2 rounded-lg hover:from-blue-500 hover:to-green-500 transition duration-300">立即订阅</button>
             </div>
         </div>
     </main>
