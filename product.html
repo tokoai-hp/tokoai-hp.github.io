@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
+        
         body {
             font-family: 'Poppins', sans-serif;
             background: 
@@ -66,18 +68,30 @@
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 191, 255, 0.4);
         }
+        .user-initial {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
     <div class="aurora"></div>
     <div class="stars"></div>
     <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
-        <a href="#" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
+        <a href="https://tokoai-hp.github.io" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
         <nav>
-            <ul class="flex space-x-6">
+            <ul class="flex space-x-6 items-center">
                 <li><a href="https://tokoai-hp.github.io/product.html" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
                 <li><a href="https://tokoai-hp.github.io/course.html" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+                <li id="loginButton"><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+                <li id="userInitial" class="user-initial hidden"></li>
             </ul>
         </nav>
     </header>
@@ -86,7 +100,7 @@
         <div class="max-w-4xl mx-auto service-container p-8 rounded-lg">
             <h1 class="text-3xl font-bold mb-6 text-center gradient-text">Toko自动化配置邮件服务</h1>
             <p class="text-center mb-8 text-gray-300">（暂时不支持gmail）</p>
-
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="membership-type p-6 rounded-lg">
                     <h2 class="text-xl font-semibold mb-4 gradient-text">免费用户</h2>
@@ -95,7 +109,7 @@
                         <li>到期后已配置的邮件自动失效</li>
                     </ul>
                 </div>
-
+                
                 <div class="membership-type p-6 rounded-lg">
                     <h2 class="text-xl font-semibold mb-4 gradient-text">普通会员（28r）</h2>
                     <ul class="list-disc list-inside text-gray-300">
@@ -104,7 +118,7 @@
                         <li>不需要继续使用的邮箱可以在主页解除</li>
                     </ul>
                 </div>
-
+                
                 <div class="membership-type p-6 rounded-lg">
                     <h2 class="text-xl font-semibold mb-4 gradient-text">高级会员（40r）</h2>
                     <ul class="list-disc list-inside text-gray-300">
@@ -127,6 +141,9 @@
     </footer>
 
     <script>
+        const loginButton = document.getElementById('loginButton');
+        const userInitial = document.getElementById('userInitial');
+
         // 检查是否已登录
         const checkAuth = async () => {
             const authToken = localStorage.getItem('authToken');
@@ -137,8 +154,11 @@
                             'Authorization': `Bearer ${authToken}`
                         }
                     });
-                    // 用户已登录，可以在这里添加一些逻辑，比如显示用户名
-                    console.log('User is logged in:', response.data);
+                    // 用户已登录，显示用户名首字母
+                    const userName = response.data.name;
+                    userInitial.textContent = userName.charAt(0).toUpperCase();
+                    loginButton.classList.add('hidden');
+                    userInitial.classList.remove('hidden');
                 } catch (error) {
                     console.error('Auth check failed:', error);
                     localStorage.removeItem('authToken');
@@ -147,6 +167,12 @@
         };
 
         checkAuth();
+
+        // 点击登录按钮跳转到登录页面
+        loginButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'https://tokoai-hp.github.io/login.html';
+        });
     </script>
 </body>
 </html>
