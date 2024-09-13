@@ -201,92 +201,78 @@
         }
 
         function getUserInfo() {
-    const token = getAuthToken();
-    if (!token) return;
+            const token = getAuthToken();
+            if (!token) return;
 
-    axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/getUserInfo', {
-        headers: { 'Authorization': `Bearer ${token}` }
-    })
-    .then(response => {
-        const data = response.data;
-        document.getElementById('userName').textContent = data.name;
-        document.getElementById('userBalance').textContent = data.balance.toFixed(1);
-        
-        const statusElement = document.getElementById('userStatus');
-        const endTimeElement = document.getElementById('userEndTime');
-        const quotaElement = document.getElementById('userQuota');
+            axios.get('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/getUserInfo', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(response => {
+                const data = response.data;
+                document.getElementById('userName').textContent = data.name;
+                document.getElementById('userBalance').textContent = data.balance.toFixed(1);
+                
+                const statusElement = document.getElementById('userStatus');
+                if (data.status === 'pro') {
+                    statusElement.innerHTML = '<span class="status-badge status-member">高级会员</span>';
+                } else if (data.status === 'normal') {
+                    statusElement.innerHTML = '<span class="status-badge bg-blue-500 text-white">普通会员</span>';
+                } else {
+                    statusElement.innerHTML = '<span class="status-badge bg-gray-500 text-white">免费用户</span>';
+                }
 
-        // 处理会员状态
-        switch(data.status) {
-            case 'pro':
-                statusElement.innerHTML = '<span class="status-badge status-member">高级会员</span>';
-                break;
-            case 'normal':
-                statusElement.innerHTML = '<span class="status-badge status-member">普通会员</span>';
-                break;
-            default:
-                statusElement.innerHTML = '<span class="status-badge bg-gray-500 text-white">免费用户</span>';
+                // 显示到期时间
+                const endTimeElement = document.getElementById('userEndTime');
+                if (data.endTime) {
+                    const endDate = new Date(data.endTime);
+                    endTimeElement.textContent = `到期时间: ${endDate.toLocaleDateString()}`;
+                } else {
+                    endTimeElement.textContent = '无到期时间';
+                }
+
+                // 显示剩余免费条数
+                const quotaElement = document.getElementById('userQuota');
+                if (data.quota !== undefined) {
+                    quotaElement.textContent = `剩余免费条数: ${data.quota}`;
+                } else {
+                    quotaElement.textContent = '无限制使用';
+                }
+
+                const emailListHtml = data.email_list.map(email => `
+                    <div class="email-item p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold">${email.Email}</span>
+                            <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
+                                ${email.isActive ? '使用中' : '未使用'}
+                            </span>
+                        </div>
+                        <p class="text-sm mb-2">邮件提取码: ${email.password}</p>
+                        <p class="text-sm mb-2">使用次数: ${email.used_time}</p>
+                        <div class="flex space-x-2">
+                            <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
+                                ${email.isActive ? '停用' : '激活'}
+                            </button>
+                            <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
+                                生成子提取码
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('emailList').innerHTML = emailListHtml;
+
+                // 设置用户头像
+                const avatarContent = data.name.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = avatarContent;
+                document.getElementById('userAvatarLarge').textContent = avatarContent;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('获取用户信息失败，请重新登录');
+                window.location.href = './login.html';
+            });
         }
 
-        // 显示到期时间（如果是会员）
-        if (data.status === 'pro' || data.status === 'normal') {
-            const endDate = new Date(data.endTime);
-            endTimeElement.textContent = `到期时间: ${endDate.toLocaleString()}`;
-            endTimeElement.classList.remove('hidden');
-        } else {
-            endTimeElement.classList.add('hidden');
-        }
-
-        // 显示剩余次数（如果是免费用户）
-        if (data.status !== 'pro' && data.status !== 'normal') {
-            quotaElement.textContent = `剩余次数: ${data.quota}`;
-            quotaElement.classList.remove('hidden');
-        } else {
-            quotaElement.classList.add('hidden');
-        }
-
-        // 处理邮件列表
-        const emailListHtml = data.email_list.map(email => `
-            <div class="email-item p-4 rounded-lg">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="font-semibold">${email.Email}</span>
-                    <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
-                        ${email.isActive ? '使用中' : '未使用'}
-                    </span>
-                </div>
-                <p class="text-sm mb-2">邮件提取码: ${email.password}</p>
-                <p class="text-sm mb-2">使用次数: ${email.used_time}</p>
-                <div class="flex space-x-2">
-                    <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
-                        ${email.isActive ? '停用' : '激活'}
-                    </button>
-                    <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
-                        生成子提取码
-                    </button>
-                </div>
-            </div>
-        `).join('');
-        document.getElementById('emailList').innerHTML = emailListHtml;
-
-        // 设置用户头像
-        const avatarContent = data.name.charAt(0).toUpperCase();
-        document.getElementById('userAvatar').textContent = avatarContent;
-        document.getElementById('userAvatarLarge').textContent = avatarContent;
-
-        // 如果用户是管理员，可以添加一些额外的功能或显示
-        if (data.isAdmin) {
-            document.getElementById('adminPanel').classList.remove('hidden');
-        } else {
-            document.getElementById('adminPanel').classList.add('hidden');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('获取用户信息失败，请重新登录');
-        window.location.href = './login.html';
-    });
-}
-        function toggleEmail(email, isUnActive) {
+                function toggleEmail(email, isUnActive) {
             const token = getAuthToken();
             if (!token) return;
 
