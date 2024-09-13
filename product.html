@@ -68,18 +68,29 @@
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 191, 255, 0.4);
         }
+        .user-initial {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00BFFF, #00FA9A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex flex-col text-gray-100">
     <div class="aurora"></div>
     <div class="stars"></div>
     <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
-        <a href="#" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
+        <a href="https://tokoai-hp.github.io" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
         <nav>
-            <ul class="flex space-x-6">
+            <ul class="flex space-x-6 items-center">
                 <li><a href="https://tokoai-hp.github.io/product.html" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
                 <li><a href="https://tokoai-hp.github.io/course.html" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
-                <li><a href="#" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
+                <li id="userInitial" class="user-initial hidden"></li>
             </ul>
         </nav>
     </header>
@@ -113,7 +124,7 @@
                         <li>200次邮件收取</li>
                         <li>超出后0.20/条收费（直接从余额扣取）</li>
                         <li>不需要继续使用的邮箱可以在主页解除</li>
-                        <li>获得防二次倒卖功能：可以设置子提取码的收邮件的次数</li>
+                        <li>解锁防二次倒卖功能：可以设置子提取码的收邮件的次数</li>
                     </ul>
                 </div>
             </div>
@@ -129,6 +140,8 @@
     </footer>
 
     <script>
+        const userInitial = document.getElementById('userInitial');
+
         // 检查是否已登录
         const checkAuth = async () => {
             const authToken = localStorage.getItem('authToken');
@@ -139,8 +152,10 @@
                             'Authorization': `Bearer ${authToken}`
                         }
                     });
-                    // 用户已登录，可以在这里添加一些逻辑，比如显示用户名
-                    console.log('User is logged in:', response.data);
+                    // 用户已登录，显示用户名首字母
+                    const userName = response.data.name;
+                    userInitial.textContent = userName.charAt(0).toUpperCase();
+                    userInitial.classList.remove('hidden');
                 } catch (error) {
                     console.error('Auth check failed:', error);
                     localStorage.removeItem('authToken');
