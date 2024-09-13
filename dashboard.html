@@ -142,6 +142,8 @@
                         <div>
                             <p class="text-xl font-semibold" id="userName"></p>
                             <div id="userStatus" class="mt-2"></div>
+                            <p id="userEndTime" class="text-sm mt-1"></p>
+                            <p id="userQuota" class="text-sm mt-1"></p>
                         </div>
                     </div>
                     <div class="balance-circle">
@@ -211,12 +213,22 @@
                 document.getElementById('userBalance').textContent = data.balance.toFixed(1);
                 
                 const statusElement = document.getElementById('userStatus');
-                if (data.balance > 0) {
-                    statusElement.innerHTML = '<span class="status-badge status-member">会员</span>';
-                } else if (data.isTrial) {
-                    statusElement.innerHTML = '<span class="status-badge bg-yellow-500 text-white">试用</span>';
+                const endTimeElement = document.getElementById('userEndTime');
+                const quotaElement = document.getElementById('userQuota');
+
+                // 处理会员状态
+                if (data.status === 'pro') {
+                    statusElement.innerHTML = '<span class="status-badge status-member">高级会员</span>';
+                    endTimeElement.textContent = `到期时间: ${new Date(data.endTime).toLocaleString()}`;
+                    quotaElement.textContent = '';
+                } else if (data.status === 'normal') {
+                    statusElement.innerHTML = '<span class="status-badge status-member">普通会员</span>';
+                    endTimeElement.textContent = `到期时间: ${new Date(data.endTime).toLocaleString()}`;
+                    quotaElement.textContent = '';
                 } else {
-                    statusElement.innerHTML = '<span class="status-badge bg-red-500 text-white">到期</span>';
+                    statusElement.innerHTML = '<span class="status-badge bg-gray-500 text-white">免费用户</span>';
+                    endTimeElement.textContent = '';
+                    quotaElement.textContent = `剩余次数: ${data.quota}`;
                 }
 
                 const emailListHtml = data.email_list.map(email => `
@@ -298,7 +310,7 @@
                 } else if (data.message) {
                     document.getElementById('rechargeResult').textContent = `充值失败：${data.message}`;
                 } else {
-                                        document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
+                    document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
                 }
             })
             .catch(error => {
