@@ -277,7 +277,7 @@
                 }
                 
                 endTimeElement.textContent = `到期时间: ${new Date(data.endTime).toLocaleString()}`;
-                quotaElement.textContent = `剩余次数: ${data.freeQuota}`;
+                quotaElement.textContent = `剩余次数: ${data.quota}`;
 
                 const emailListHtml = data.email_list.map(email => `
                     <div class="email-item p-4 rounded-lg">
