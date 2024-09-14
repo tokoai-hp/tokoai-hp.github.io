@@ -285,24 +285,6 @@
                             <span class="font-semibold">${email.Email}</span>
                             <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
                                 ${email.isActive ? '使用中' : '未使用'}
-                            </span>                // 显示到期时间
-                if (data.endTime) {
-                    const endDate = new Date(data.endTime);
-                    endTimeElement.textContent = `到期时间: ${endDate.toLocaleString()}`;
-                } else {
-                    endTimeElement.textContent = '未开通会员';
-                }
-
-                // 显示免费条数
-                quotaElement.textContent = `剩余免费条数: ${data.freeQuota}`;
-
-                // 处理邮箱列表
-                const emailListHtml = data.emails.map(email => `
-                    <div class="email-item p-4 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-semibold">${email.Email}</span>
-                            <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
-                                ${email.isActive ? '使用中' : '未使用'}
                             </span>
                         </div>
                         <p class="text-sm mb-2">邮件提取码: ${email.password}</p>
