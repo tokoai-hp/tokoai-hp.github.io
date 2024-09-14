@@ -225,11 +225,12 @@
     <div id="upgradeModal" class="modal">
         <div class="modal-content bg-gray-800 text-white">
             <span class="close">&times;</span>
-            <h2 class="text-2xl font-bold mb-4">会员升级确认</h2>
+            <h2 class="text-2xl font-bold mb-4">会员操作</h2>
             <p id="upgradeMessage" class="mb-4"></p>
+            <div id="upgradeOptions" class="flex justify-center space-x-4 mb-4"></div>
             <div class="flex justify-end">
                 <button id="cancelUpgrade" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2">取消</button>
-                <button id="confirmUpgrade" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">确认升级</button>
+                <button id="confirmUpgrade" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">确认</button>
             </div>
         </div>
     </div>
@@ -238,6 +239,7 @@
         let selectedEmail = '';
         let currentUserStatus = '';
         let upgradeType = '';
+        let currentAction = '';
 
         function getAuthToken() {
             let authToken = localStorage.getItem('authToken');
@@ -268,20 +270,35 @@
                 currentUserStatus = data.status;
                 if (data.status === 'pro') {
                     statusElement.innerHTML = '<span class="status-badge status-member" onclick="showUpgradeOptions()">高级会员</span>';
-                    endTimeElement.textContent = `到期时间: ${new Date(data.endTime).toLocaleString()}`;
-                    quotaElement.textContent = '';
                 } else if (data.status === 'normal') {
                     statusElement.innerHTML = '<span class="status-badge status-member" onclick="showUpgradeOptions()">普通会员</span>';
-                    endTimeElement.textContent = `到期时间: ${new Date(data.endTime).toLocaleString()}`;
-                    quotaElement.textContent = '';
                 } else {
                     statusElement.innerHTML = '<span class="status-badge bg-gray-500 text-white" onclick="showUpgradeOptions()">免费用户</span>';
-                    endTimeElement.textContent = '';
-                    quotaElement.textContent = `剩余次数: ${data.quota}`;
                 }
+                
+                endTimeElement.textContent = `到期时间: ${new Date(data.endTime).toLocaleString()}`;
+                quotaElement.textContent = `剩余次数: ${data.freeQuota}`;
 
                 const emailListHtml = data.email_list.map(email => `
-                                        <div class="email-item p-4 rounded-lg">
+                    <div class="email-item p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold">${email.Email}</span>
+                            <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
+                                ${email.isActive ? '使用中' : '未使用'}
+                            </span>                // 显示到期时间
+                if (data.endTime) {
+                    const endDate = new Date(data.endTime);
+                    endTimeElement.textContent = `到期时间: ${endDate.toLocaleString()}`;
+                } else {
+                    endTimeElement.textContent = '未开通会员';
+                }
+
+                // 显示免费条数
+                quotaElement.textContent = `剩余免费条数: ${data.freeQuota}`;
+
+                // 处理邮箱列表
+                const emailListHtml = data.emails.map(email => `
+                    <div class="email-item p-4 rounded-lg">
                         <div class="flex justify-between items-center mb-2">
                             <span class="font-semibold">${email.Email}</span>
                             <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
@@ -448,33 +465,44 @@
 
         function showUpgradeOptions() {
             let message = '';
+            let options = '';
+            
             if (currentUserStatus === 'pro') {
-                message = '您已经是高级会员，无需升级。';
+                message = '您当前是高级会员，是否要续费？';
+                options = '<button onclick="selectAction(\'renew\', \'pro\')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">续费高级会员</button>';
             } else if (currentUserStatus === 'normal') {
-                message = '您当前是普通会员，是否要升级到高级会员？';
-                upgradeType = 'pro';
+                message = '您当前是普通会员，请选择操作：';
+                options = `
+                    <button onclick="selectAction('renew', 'normal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">续费普通会员</button>
+                    <button onclick="selectAction('upgrade', 'pro')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">升级到高级会员</button>
+                `;
             } else {
-                message = '您当前是免费用户，请选择要升级的会员类型：<br>' +
-                          '<button onclick="selectUpgrade(\'normal\')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">普通会员</button>' +
-                          '<button onclick="selectUpgrade(\'pro\')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">高级会员</button>';
+                message = '您当前是免费用户，请选择要升级的会员类型：';
+                options = `
+                    <button onclick="selectAction('upgrade', 'normal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">升级到普通会员</button>
+                    <button onclick="selectAction('upgrade', 'pro')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">升级到高级会员</button>
+                `;
             }
             
             document.getElementById('upgradeMessage').innerHTML = message;
+            document.getElementById('upgradeOptions').innerHTML = options;
             document.getElementById('upgradeModal').style.display = 'block';
-
-            if (currentUserStatus === 'pro') {
-                document.getElementById('confirmUpgrade').style.display = 'none';
-            } else {
-                document.getElementById('confirmUpgrade').style.display = 'inline-block';
-            }
         }
 
-        function selectUpgrade(type) {
+        function selectAction(action, type) {
+            currentAction = action;
             upgradeType = type;
-            document.getElementById('upgradeMessage').innerHTML = `您选择升级到${type === 'normal' ? '普通' : '高级'}会员，是否确认？`;
+            let confirmMessage = '';
+            if (action === 'upgrade') {
+                confirmMessage = `您确定要升级到${type === 'normal' ? '普通' : '高级'}会员吗？`;
+            } else if (action === 'renew') {
+                confirmMessage = `您确定要续费${type === 'normal' ? '普通' : '高级'}会员吗？`;
+            }
+            document.getElementById('upgradeMessage').innerHTML = confirmMessage;
+            document.getElementById('upgradeOptions').innerHTML = '';
         }
 
-        function upgradeMembership() {
+        function performMembershipAction() {
             const token = getAuthToken();
             if (!token) return;
 
@@ -484,13 +512,14 @@
             )
             .then(response => {
                 const data = response.data.user;
-                alert(`升级成功！您现在是${data.status === 'pro' ? '高级' : '普通'}会员。\n余额：${data.balance.toFixed(1)}\n到期时间：${new Date(data.endTime).toLocaleString()}`);
+                let actionText = currentAction === 'upgrade' ? '升级' : '续费';
+                alert(`${actionText}成功！您现在是${data.status === 'pro' ? '高级' : '普通'}会员。\n余额：${data.balance.toFixed(1)}\n到期时间：${new Date(data.endTime).toLocaleString()}\n剩余免费条数：${data.freeQuota}`);
                 document.getElementById('upgradeModal').style.display = 'none';
                 getUserInfo(); // 更新用户信息显示
             })
             .catch(error => {
-                console.error('Error upgrading membership:', error);
-                alert('升级失败，请稍后重试');
+                console.error('Error updating membership:', error);
+                alert('操作失败，请稍后重试');
             });
         }
 
@@ -509,7 +538,7 @@
         }
 
         confirmButton.onclick = function() {
-            upgradeMembership();
+            performMembershipAction();
         }
 
         window.onclick = function(event) {
