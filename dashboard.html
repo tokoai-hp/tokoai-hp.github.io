@@ -228,7 +228,7 @@
             <h2 class="text-2xl font-bold mb-4">会员操作</h2>
             <p id="upgradeMessage" class="mb-4"></p>
             <div id="upgradeOptions" class="flex justify-center space-x-4 mb-4"></div>
-            <div class="flex justify-end">
+            <div id="confirmButtons" class="flex justify-end hidden">
                 <button id="cancelUpgrade" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2">取消</button>
                 <button id="confirmUpgrade" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">确认</button>
             </div>
@@ -280,256 +280,247 @@
                 quotaElement.textContent = `剩余次数: ${data.quota}`;
 
                 const emailListHtml = data.email_list.map(email => `
-                    <div class="email-item p-4 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-semibold">${email.Email}</span>
-                            <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
-                                ${email.isActive ? '使用中' : '未使用'}
-                            </span>
-                        </div>
-                        <p class="text-sm mb-2">邮件提取码: ${email.password}</p>
-                        <p class="text-sm mb-2">使用次数: ${email.used_time}</p>
-                        <div class="flex space-x-2">
-                            <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
-                                ${email.isActive ? '停用' : '激活'}
-                            </button>
-                            <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
-                                生成子提取码
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-                document.getElementById('emailList').innerHTML = emailListHtml;
+            <div class="email-item p-4 rounded-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-semibold">${email.Email}</span>
+                    <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
+                        ${email.isActive ? '使用中' : '未使用'}
+                    </span>
+                </div>
+                <p class="text-sm mb-2">邮件提取码: ${email.password}</p>
+                <p class="text-sm mb-2">使用次数: ${email.used_time}</p>
+                <div class="flex space-x-2">
+                    <button onclick="toggleEmail('${email.Email}', ${!email.isActive})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
+                        ${email.isActive ? '停用' : '激活'}
+                    </button>
+                    <button onclick="showSubcodeGenerator('${email.Email}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm transition duration-300">
+                        生成子提取码
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('emailList').innerHTML = emailListHtml;
 
-                // 设置用户头像
-                const avatarContent = data.name.charAt(0).toUpperCase();
-                document.getElementById('userAvatar').textContent = avatarContent;
-                document.getElementById('userAvatarLarge').textContent = avatarContent;
+        // 设置用户头像
+        const avatarContent = data.name.charAt(0).toUpperCase();
+        document.getElementById('userAvatar').textContent = avatarContent;
+        document.getElementById('userAvatarLarge').textContent = avatarContent;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('获取用户信息失败，请重新登录');
+        window.location.href = './login.html';
+    });
+}
+
+function toggleEmail(email, isUnActive) {
+    const token = getAuthToken();
+    if (!token) return;
+
+    axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
+        { 
+            email_resend: email,
+            isUnActive: isUnActive
+        },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+        const data = response.data;
+        console.log('Email status changed:', data);
+        alert(`邮箱 ${data.Email} 已${data.isActive ? '激活' : '停用'}`);
+        getUserInfo(); // 重新加载用户信息以更新显示
+    })
+    .catch(error => {
+        console.error('Error toggling email status:', error);
+        alert('更改邮件状态失败，请重试');
+    });
+}
+
+function rechargeKami() {
+    const kami = document.getElementById('kamiInput').value;
+    if (!kami) {
+        alert('请输入卡密');
+        return;
+    }
+
+    const token = getAuthToken();
+    if (!token) return;
+
+    axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_check', 
+        { pass: kami },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+        const data = response.data;
+        if (data.price !== undefined) {
+            document.getElementById('rechargeResult').textContent = `充值成功，金额：${data.price.toFixed(1)}`;
+            getUserInfo(); // 更新用户信息显示
+        } else if (data.message) {
+            document.getElementById('rechargeResult').textContent = `充值失败：${data.message}`;
+        } else {
+            document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('rechargeResult').textContent = '充值失败，请稍后重试';
+    });
+}
+
+function showSubcodeGenerator(email) {
+    selectedEmail = email;
+    document.getElementById('selectedEmail').textContent = email;
+    document.getElementById('subcodeGenerator').classList.remove('hidden');
+    document.getElementById('subcodeResult').innerHTML = '';
+}
+
+function generateSubcode() {
+    const token = getAuthToken();
+    if (!token) return;
+
+    const kamiNumber = document.getElementById('kamiNumber').value;
+    const usedQuota = document.getElementById('usedQuota').value;
+
+    if (!kamiNumber || !usedQuota || !selectedEmail) {
+        alert('请填写所有必要信息');
+        return;
+    }
+
+    axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/generate_subcode', 
+        { 
+            kamiNumber: parseInt(kamiNumber),
+            usedQuota: parseInt(usedQuota),
+            email: selectedEmail
+        },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+        const subcodes = response.data;
+        const resultElement = document.getElementById('subcodeResult');
+        resultElement.innerHTML = '<h4 class="font-bold mb-4 text-white">生成的子提取码：</h4>';
+        subcodes.forEach((subcode, index) => {
+            const subcodeText = `${selectedEmail} ${subcode}`;
+            resultElement.innerHTML += `
+                <div class="subcode-item">
+                    <span class="subcode-text">${subcodeText}</span>
+                    <button class="copy-button" onclick="copySubcode(${index})">复制</button>
+                </div>
+            `;
+        });
+        // 添加全部复制按钮
+        resultElement.innerHTML += `
+            <div class="mt-4">
+                <button class="copy-button" onclick="copyAllSubcodes()">复制全部</button>
+            </div>
+        `;
+    })
+    .catch(error => {
+        console.error('Error generating subcodes:', error);
+        alert('生成子提取码失败，请重试');
+    });
+}
+
+function copySubcode(index) {
+    const subcodeElements = document.querySelectorAll('.subcode-text');
+    if (subcodeElements[index]) {
+        navigator.clipboard.writeText(subcodeElements[index].textContent)
+            .then(() => {
+                alert('子提取码已复制到剪贴板');
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('获取用户信息失败，请重新登录');
-                window.location.href = './login.html';
+            .catch(err => {
+                console.error('无法复制文本: ', err);
             });
-        }
+    }
+}
 
-        function toggleEmail(email, isUnActive) {
-            const token = getAuthToken();
-            if (!token) return;
+function copyAllSubcodes() {
+    const subcodeElements = document.querySelectorAll('.subcode-text');
+    const allSubcodes = Array.from(subcodeElements).map(el => el.textContent).join('\n');
+    navigator.clipboard.writeText(allSubcodes)
+        .then(() => {
+            alert('所有子提取码已复制到剪贴板');
+        })
+        .catch(err => {
+            console.error('无法复制文本: ', err);
+        });
+}
 
-            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/undo_email', 
-                { 
-                    email_resend: email,
-                    isUnActive: isUnActive
-                },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            .then(response => {
-                const data = response.data;
-                console.log('Email status changed:', data);
-                alert(`邮箱 ${data.Email} 已${data.isActive ? '激活' : '停用'}`);
-                getUserInfo(); // 重新加载用户信息以更新显示
-            })
-            .catch(error => {
-                console.error('Error toggling email status:', error);
-                alert('更改邮件状态失败，请重试');
-            });
-        }
+function showUpgradeOptions() {
+    let message = '';
+    let options = '';
+    
+    if (currentUserStatus === 'pro') {
+        message = '您当前是高级会员，是否要续费？';
+        options = '<button onclick="selectAction(\'renew\', \'pro\')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">续费高级会员</button>';
+    } else if (currentUserStatus === 'normal') {
+        message = '您当前是普通会员，请选择操作：';
+        options = `
+            <button onclick="selectAction('renew', 'normal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">续费普通会员</button>
+            <button onclick="selectAction('upgrade', 'pro')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">升级到高级会员</button>
+        `;
+    } else {
+        message = '您当前是免费用户，请选择要升级的会员类型：';
+        options = `
+            <button onclick="selectAction('upgrade', 'normal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">升级到普通会员</button>
+            <button onclick="selectAction('upgrade', 'pro')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">升级到高级会员</button>
+        `;
+    }
+    
+    document.getElementById('upgradeMessage').innerHTML = message;
+    document.getElementById('upgradeOptions').innerHTML = options;
+    document.getElementById('confirmButtons').classList.add('hidden');
+    document.getElementById('upgradeModal').style.display = 'block';
+}
 
-        function rechargeKami() {
-            const kami = document.getElementById('kamiInput').value;
-            if (!kami) {
-                alert('请输入卡密');
-                return;
-            }
+function selectAction(action, type) {
+    currentAction = action;
+    upgradeType = type;
+    let confirmMessage = '';
+    if (action === 'upgrade') {
+        confirmMessage = `您确定要升级到${type === 'normal' ? '普通' : '高级'}会员吗？`;
+    } else if (action === 'renew') {
+        confirmMessage = `您确定要续费${type === 'normal' ? '普通' : '高级'}会员吗？`;
+    }
+    document.getElementById('upgradeMessage').innerHTML = confirmMessage;
+    document.getElementById('upgradeOptions').innerHTML = '';
+    document.getElementById('confirmButtons').classList.remove('hidden');
+}
 
-            const token = getAuthToken();
-            if (!token) return;
+function performMembershipAction() {
+    const token = getAuthToken();
+    if (!token) return;
 
-            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/kami_check', 
-                { pass: kami },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            .then(response => {
-                const data = response.data;
-                if (data.price !== undefined) {
-                    document.getElementById('rechargeResult').textContent = `充值成功，金额：${data.price.toFixed(1)}`;
-                    getUserInfo(); // 更新用户信息显示
-                } else if (data.message) {
-                    document.getElementById('rechargeResult').textContent = `充值失败：${data.message}`;
-                } else {
-                    document.getElementById('rechargeResult').textContent = '充值失败，请检查卡密是否正确';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('rechargeResult').textContent = '充值失败，请稍后重试';
-            });
-        }
+    axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/membership', 
+        { purchasedItem: upgradeType },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    .then(response => {
+        const data = response.data;
+        alert(data.message);
+        document.getElementById('upgradeModal').style.display = 'none';
+        getUserInfo(); // 更新用户信息显示
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('操作失败，请稍后重试');
+    });
+}
 
-        function showSubcodeGenerator(email) {
-            selectedEmail = email;
-            document.getElementById('selectedEmail').textContent = email;
-            document.getElementById('subcodeGenerator').classList.remove('hidden');
-            document.getElementById('subcodeResult').innerHTML = '';
-        }
+// 关闭模态框
+document.querySelector('.close').onclick = function() {
+    document.getElementById('upgradeModal').style.display = 'none';
+}
 
-        function generateSubcode() {
-            const token = getAuthToken();
-            if (!token) return;
+// 确认按钮事件
+document.getElementById('confirmUpgrade').onclick = performMembershipAction;
 
-            const kamiNumber = document.getElementById('kamiNumber').value;
-            const usedQuota = document.getElementById('usedQuota').value;
+// 取消按钮事件
+document.getElementById('cancelUpgrade').onclick = function() {
+    document.getElementById('upgradeModal').style.display = 'none';
+}
 
-            if (!kamiNumber || !usedQuota || !selectedEmail) {
-                alert('请填写所有必要信息');
-                return;
-            }
-
-            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:YjC_TEO2/generate_subcode', 
-                { 
-                    kamiNumber: parseInt(kamiNumber),
-                    usedQuota: parseInt(usedQuota),
-                    email: selectedEmail
-                },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            .then(response => {
-                const subcodes = response.data;
-                const resultElement = document.getElementById('subcodeResult');
-                resultElement.innerHTML = '<h4 class="font-bold mb-4 text-white">生成的子提取码：</h4>';
-                subcodes.forEach((subcode, index) => {
-                    const subcodeText = `${selectedEmail} ${subcode}`;
-                    resultElement.innerHTML += `
-                        <div class="subcode-item">
-                            <span class="subcode-text">${subcodeText}</span>
-                            <button class="copy-button" onclick="copySubcode(${index})">复制</button>
-                        </div>
-                    `;
-                });
-                // 添加全部复制按钮
-                resultElement.innerHTML += `
-                    <div class="mt-4">
-                        <button class="copy-button" onclick="copyAllSubcodes()">复制全部</button>
-                    </div>
-                `;
-            })
-            .catch(error => {
-                console.error('Error generating subcodes:', error);
-                alert('生成子提取码失败，请重试');
-            });
-        }
-
-        function copySubcode(index) {
-            const subcodeElements = document.querySelectorAll('.subcode-text');
-            if (subcodeElements[index]) {
-                navigator.clipboard.writeText(subcodeElements[index].textContent)
-                    .then(() => {
-                        alert('子提取码已复制到剪贴板');
-                    })
-                    .catch(err => {
-                        console.error('无法复制文本: ', err);
-                    });
-            }
-        }
-
-        function copyAllSubcodes() {
-            const subcodeElements = document.querySelectorAll('.subcode-text');
-            const allSubcodes = Array.from(subcodeElements).map(el => el.textContent).join('\n');
-            navigator.clipboard.writeText(allSubcodes)
-                .then(() => {
-                    alert('所有子提取码已复制到剪贴板');
-                })
-                .catch(err => {
-                    console.error('无法复制文本: ', err);
-                });
-        }
-
-        function showUpgradeOptions() {
-            let message = '';
-            let options = '';
-            
-            if (currentUserStatus === 'pro') {
-                message = '您当前是高级会员，是否要续费？';
-                options = '<button onclick="selectAction(\'renew\', \'pro\')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">续费高级会员</button>';
-            } else if (currentUserStatus === 'normal') {
-                message = '您当前是普通会员，请选择操作：';
-                options = `
-                    <button onclick="selectAction('renew', 'normal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">续费普通会员</button>
-                    <button onclick="selectAction('upgrade', 'pro')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">升级到高级会员</button>
-                `;
-            } else {
-                message = '您当前是免费用户，请选择要升级的会员类型：';
-                options = `
-                    <button onclick="selectAction('upgrade', 'normal')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2 mt-2">升级到普通会员</button>
-                    <button onclick="selectAction('upgrade', 'pro')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-2">升级到高级会员</button>
-                `;
-            }
-            
-            document.getElementById('upgradeMessage').innerHTML = message;
-            document.getElementById('upgradeOptions').innerHTML = options;
-            document.getElementById('upgradeModal').style.display = 'block';
-        }
-
-        function selectAction(action, type) {
-            currentAction = action;
-            upgradeType = type;
-            let confirmMessage = '';
-            if (action === 'upgrade') {
-                confirmMessage = `您确定要升级到${type === 'normal' ? '普通' : '高级'}会员吗？`;
-            } else if (action === 'renew') {
-                confirmMessage = `您确定要续费${type === 'normal' ? '普通' : '高级'}会员吗？`;
-            }
-            document.getElementById('upgradeMessage').innerHTML = confirmMessage;
-            document.getElementById('upgradeOptions').innerHTML = '';
-        }
-
-        function performMembershipAction() {
-            const token = getAuthToken();
-            if (!token) return;
-
-            axios.post('https://x8ki-letl-twmt.n7.xano.io/api:3dq0iFXe/membership', 
-                { purchasedItem: upgradeType },
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            .then(response => {
-                const data = response.data.user;
-                let actionText = currentAction === 'upgrade' ? '升级' : '续费';
-                alert(`${actionText}成功！您现在是${data.status === 'pro' ? '高级' : '普通'}会员。\n余额：${data.balance.toFixed(1)}\n到期时间：${new Date(data.endTime).toLocaleString()}\n剩余免费条数：${data.freeQuota}`);
-                document.getElementById('upgradeModal').style.display = 'none';
-                getUserInfo(); // 更新用户信息显示
-            })
-            .catch(error => {
-                console.error('Error updating membership:', error);
-                alert('操作失败，请稍后重试');
-            });
-        }
-
-        // 模态框相关事件
-        const modal = document.getElementById('upgradeModal');
-        const span = document.getElementsByClassName('close')[0];
-        const cancelButton = document.getElementById('cancelUpgrade');
-        const confirmButton = document.getElementById('confirmUpgrade');
-
-        span.onclick = function() {
-            modal.style.display = 'none';
-        }
-
-        cancelButton.onclick = function() {
-            modal.style.display = 'none';
-        }
-
-        confirmButton.onclick = function() {
-            performMembershipAction();
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        window.onload = getUserInfo;
-    </script>
+// 页面加载时获取用户信息
+window.onload = getUserInfo;
+</script>
 </body>
 </html>
