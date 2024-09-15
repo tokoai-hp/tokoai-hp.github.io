@@ -158,6 +158,7 @@
                 <li id="userMenu">
                     <div class="user-avatar w-8 h-8 text-sm" id="userAvatar"></div>
                 </li>
+                <li><button id="logoutButton" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300">登出</button></li>
             </ul>
         </nav>
     </header>
@@ -281,7 +282,7 @@
 
                 const emailListHtml = data.email_list.map(email => `
             <div class="email-item p-4 rounded-lg">
-                <div class="flex justify-between items-center mb-2">
+                                <div class="flex justify-between items-center mb-2">
                     <span class="font-semibold">${email.Email}</span>
                     <span class="px-2 py-1 rounded-full text-xs ${email.isActive ? 'bg-green-500' : 'bg-red-500'} text-white">
                         ${email.isActive ? '使用中' : '未使用'}
@@ -511,16 +512,30 @@ document.querySelector('.close').onclick = function() {
     document.getElementById('upgradeModal').style.display = 'none';
 }
 
-// 确认按钮事件
-document.getElementById('confirmUpgrade').onclick = performMembershipAction;
-
-// 取消按钮事件
-document.getElementById('cancelUpgrade').onclick = function() {
-    document.getElementById('upgradeModal').style.display = 'none';
+// 点击模态框外部关闭
+window.onclick = function(event) {
+    if (event.target == document.getElementById('upgradeModal')) {
+        document.getElementById('upgradeModal').style.display = 'none';
+    }
 }
 
+// 确认和取消按钮的事件监听器
+document.getElementById('confirmUpgrade').addEventListener('click', performMembershipAction);
+document.getElementById('cancelUpgrade').addEventListener('click', function() {
+    document.getElementById('upgradeModal').style.display = 'none';
+});
+
+// 新增：登出功能
+function logout() {
+    localStorage.removeItem('authToken');
+    window.location.href = './login.html';
+}
+
+// 为登出按钮添加事件监听器
+document.getElementById('logoutButton').addEventListener('click', logout);
+
 // 页面加载时获取用户信息
-window.onload = getUserInfo;
-</script>
+document.addEventListener('DOMContentLoaded', getUserInfo);
+    </script>
 </body>
 </html>
