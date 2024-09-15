@@ -93,11 +93,11 @@
     <div class="aurora"></div>
     <div class="stars"></div>
     <header class="container mx-auto py-4 px-6 flex justify-between items-center bg-opacity-20 bg-gray-900 backdrop-filter backdrop-blur-lg">
-        <a href="https://tokoai-hp.github.io" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
+        <a href="./" class="text-lg font-bold text-gray-100 hover:text-blue-400 transition duration-300">TokoAI</a>
         <nav>
             <ul class="flex space-x-6 items-center">
-                <li><a href="https://tokoai-hp.github.io/product.html" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
-                <li><a href="https://tokoai-hp.github.io/course.html" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
+                <li><a href="./product.html" class="hover:text-blue-400 transition duration-300 text-sm">产品</a></li>
+                <li><a href="./course.html" class="hover:text-blue-400 transition duration-300 text-sm">使用教程</a></li>
                 <li id="loginButton"><a href="https://tokoai-hp.github.io/dashboard.html" class="hover:text-blue-400 transition duration-300 text-sm">登录</a></li>
                 <li id="userInitial" class="user-initial hidden"></li>
             </ul>
@@ -110,55 +110,88 @@
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- 免费用户 -->
-            <div class="pricing-card p-6 relative flex flex-col justify-between">
+            <div class="pricing-card p-6 relative flex flex-col justify-between h-full">
                 <div>
-                    <h2 class="text-xl font-semibold mb-4 text-center gradient-text">免费用户</h2>
-                    <div class="text-center mb-6">
-                        <span class="current-price">¥0</span>
-                        <span class="text-gray-300">/永久</span>
+                    <h2 class="text-xl font-semibold mb-4 text-center gradient-text h-8">免费用户</h2>
+                    <div class="text-center mb-6 h-20 flex items-center justify-center">
+                        <div>
+                            <span class="current-price">¥0</span>
+                            <span class="text-gray-300">/永久</span>
+                        </div>
                     </div>
                     <ul class="space-y-2 mb-6 text-gray-300">
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>免费使用自动化邮件转发服务两天</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>到期后已配置的邮件自动失效</li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>免费使用自动化邮件转发服务两天</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>到期后已配置的邮件自动失效</span>
+                        </li>
                     </ul>
                 </div>
                 <a href="https://tokoai-hp.github.io/login.html" class="w-full bg-gradient-to-r from-blue-400 to-green-400 text-white py-2 rounded-lg hover:from-blue-500 hover:to-green-500 transition duration-300 text-center">开始使用</a>
             </div>
             
             <!-- 普通会员 -->
-            <div class="pricing-card p-6 relative flex flex-col justify-between">
+            <div class="pricing-card p-6 relative flex flex-col justify-between h-full">
                 <div>
                     <div class="discount-badge">限时优惠 26%</div>
-                    <h2 class="text-xl font-semibold mb-4 text-center gradient-text">普通会员</h2>
-                    <div class="text-center mb-6">
-                        <div class="original-price">¥38/月</div>
-                        <span class="current-price">¥28</span>
-                        <span class="text-gray-300">/月</span>
+                    <h2 class="text-xl font-semibold mb-4 text-center gradient-text h-8">普通会员</h2>
+                    <div class="text-center mb-6 h-20 flex items-center justify-center">
+                        <div>
+                            <div class="original-price">¥38/月</div>
+                            <span class="current-price">¥28</span>
+                            <span class="text-gray-300">/月</span>
+                        </div>
                     </div>
                     <ul class="space-y-2 mb-6 text-gray-300">
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>100次邮件收取次数</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>超出后0.28/条收费</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>可随时解除不需要的邮箱</li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>100次邮件收取次数</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>超出后0.28/条收费</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>可随时解除不需要的邮箱</span>
+                        </li>
                     </ul>
                 </div>
                 <a href="https://tokoai-hp.github.io/login.html" class="w-full bg-gradient-to-r from-blue-400 to-green-400 text-white py-2 rounded-lg hover:from-blue-500 hover:to-green-500 transition duration-300 text-center">立即订阅</a>
             </div>
             
             <!-- 高级会员 -->
-            <div class="pricing-card p-6 relative flex flex-col justify-between">
+            <div class="pricing-card p-6 relative flex flex-col justify-between h-full">
                 <div>
                     <div class="discount-badge">限时优惠 55%</div>
-                    <h2 class="text-xl font-semibold mb-4 text-center gradient-text">高级会员</h2>
-                    <div class="text-center mb-6">
-                        <div class="original-price">¥88/月</div>
-                        <span class="current-price">¥40</span>
-                        <span class="text-gray-300">/月</span>
+                    <h2 class="text-xl font-semibold mb-4 text-center gradient-text h-8">高级会员</h2>
+                    <div class="text-center mb-6 h-20 flex items-center justify-center">
+                        <div>
+                            <div class="original-price">¥88/月</div>
+                            <span class="current-price">¥40</span>
+                            <span class="text-gray-300">/月</span>
+                        </div>
                     </div>
                     <ul class="space-y-2 mb-6 text-gray-300">
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>200次邮件收取</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>超出后0.20/条收费</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>可随时解除不需要的邮箱</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2"></i>防二次倒卖功能</li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>200次邮件收取</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>超出后0.20/条收费</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>可随时解除不需要的邮箱</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-400 mr-2 mt-1"></i>
+                            <span>防二次倒卖功能</span>
+                        </li>
                     </ul>
                 </div>
                 <a href="https://tokoai-hp.github.io/login.html" class="w-full bg-gradient-to-r from-blue-400 to-green-400 text-white py-2 rounded-lg hover:from-blue-500 hover:to-green-500 transition duration-300 text-center">立即订阅</a>
